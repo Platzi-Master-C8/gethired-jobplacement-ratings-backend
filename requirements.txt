@@ -4,3 +4,4 @@ fastapi==0.70.0
 pytest==6.2.5
 sqlalchemy==1.4.27
 mypy==0.910
+python-dotenv==0.19.2
