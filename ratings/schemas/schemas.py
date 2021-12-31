@@ -1,15 +1,15 @@
-from datetime import datetime
-
-from typing import Optional
+from datetime import date
+from typing import List, Optional
 
 from pydantic import BaseModel
 
 
 class CompanyEvaluationBase(BaseModel):
+    company_id: int
     job_title: str
     content_type: str
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
     is_still_working_here: int
 
 
@@ -21,6 +21,8 @@ class CompanyEvaluationCreate(CompanyEvaluationBase):
     salary_rating: str
     job_location: str
     salary: float
+    currency_type: str
+    salary_frequency: str
     recommended_a_friend:  int
     allows_remote_work:  int
     is_legally_company: int
@@ -28,8 +30,6 @@ class CompanyEvaluationCreate(CompanyEvaluationBase):
 
 class CompanyEvaluation(CompanyEvaluationBase):
     id: int
-    company_id: int
-    created_at: Optional[datetime] = None
 
-    class config:
+    class Config:
         orm_mode = True
