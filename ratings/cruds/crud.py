@@ -4,8 +4,8 @@ from ratings.models import models
 from ratings.schemas import schemas
 
 
-def get_company_evaluation_by_id(db: Session, company_evaluation_id: int):
-    return db.query(models.CompanyEvaluation).filter(models.CompanyEvaluation.id == company_evaluation_id).first()
+def get_company_evaluation_by_id(db: Session, id: int):
+    return db.query(models.CompanyEvaluation).filter(models.CompanyEvaluation.id == id).first()
 
 
 def get_company_evaluations_by_company_id(db: Session, company_id: int):
