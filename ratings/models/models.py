@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, DECIMAL, false, Date
-from sqlalchemy.sql.sqltypes import TIMESTAMP
 from ratings.config.database import Base
 
 
