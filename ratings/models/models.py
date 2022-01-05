@@ -35,7 +35,7 @@ class Applicant(Base):
     name = Column(String(50), nullable=False)
     email = Column(String(70), nullable=False)
     address = Column(String(70), nullable=True)
-    telephone = Column(Integer(10), nullable=True)
+    telephone = Column(Integer, nullable=True)
     linkedln_url = Column(String(150), nullable=False)
     cv_url = Column(String(150), nullable=False)
     motivation_letter_url = Column(String(150), nullable=True)

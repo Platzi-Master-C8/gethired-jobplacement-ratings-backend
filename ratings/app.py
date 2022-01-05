@@ -69,3 +69,11 @@ def create_company_evaluation(
         db: Session = Depends(get_db)
 ):
     return crud.create_company_evaluation(db=db, company_evaluation=company_evaluation)
+
+
+@app.post("/applicants/", response_model=schemas.Applicant, status_code=status.HTTP_201_CREATED)
+def register_applicant(
+    db: Session = Depends(get_db),
+    applicant: schemas.ApplicantCreate = Body(...)
+):
+    return crud.register_applicant(db=db, applicant_body=applicant)

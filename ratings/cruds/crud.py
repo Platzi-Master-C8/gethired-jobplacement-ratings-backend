@@ -37,3 +37,19 @@ def create_company_evaluation(db: Session, company_evaluation: schemas.CompanyEv
     db.commit()
     db.refresh(db_company_evaluation_instance)
     return db_company_evaluation_instance
+
+
+def register_applicant(db: Session, applicant_body: schemas.ApplicantCreate):
+    applicant_objet = models.Applicant(
+        name=applicant_body.name,
+        email=applicant_body.email,
+        address=applicant_body.address,
+        telephone=applicant_body.telephone,
+        linkedln_url=applicant_body.linkedln_url,
+        cv_url=applicant_body.cv_url,
+        motivation_letter_url=applicant_body.motivation_letter_url
+    )
+    db.add(applicant_objet)
+    db.commit()
+    db.refresh(applicant_objet)
+    return applicant_objet

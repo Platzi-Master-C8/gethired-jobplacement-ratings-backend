@@ -51,3 +51,6 @@ class ApplicantCreate(ApplicantBase):
 
 class Applicant(ApplicantBase):
     id: int
+
+    class Config:
+        orm_mode = True
