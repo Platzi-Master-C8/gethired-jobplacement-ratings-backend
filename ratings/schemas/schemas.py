@@ -33,3 +33,24 @@ class CompanyEvaluation(CompanyEvaluationBase):
 
     class Config:
         orm_mode = True
+
+
+class ApplicantBase(BaseModel):
+    name: str
+    email: str
+    address: str
+    telephone: Optional[int] = None
+    linkedln_url: Optional[str] = None
+    cv_url: Optional[str]
+    motivation_letter_url: Optional[str] = None
+
+
+class ApplicantCreate(ApplicantBase):
+    pass
+
+
+class Applicant(ApplicantBase):
+    id: int
+
+    class Config:
+        orm_mode = True
