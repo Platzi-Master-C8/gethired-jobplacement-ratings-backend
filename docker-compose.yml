@@ -1,10 +1,31 @@
 version: '3'
 
 services:
+
     app:
+        container_name: fastapi_backend
         build:
             context: .
         volumes:
             - .:/code
         ports:
             - "8000:8000"
+        links:
+            - "postgresql:postgresql"
+        depends_on:
+            - postgresql
+
+    postgresql:
+        container_name: postgresql
+        image: postgres:14
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        volumes:
+            - ./db:/docker-entrypoint-initdb.d
+            - pgdata:/var/lib/postgresql/datadb/
+volumes:
+    pgdata:
