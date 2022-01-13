@@ -34,13 +34,13 @@ CREATE TABLE company_evaluations
     CONSTRAINT career_development_rating_check CHECK (career_development_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
     CONSTRAINT diversity_equal_opportunity_rating_check CHECK (diversity_equal_opportunity_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
     CONSTRAINT working_environment_rating_check CHECK (working_environment_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
+    CONSTRAINT currency_type_check CHECK (currency_type = ANY (ARRAY['MXN', 'COP', 'CLP', 'USD', 'EUR'])),
     CONSTRAINT salary_rating_check CHECK (salary_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
     CONSTRAINT salary_frequency_check CHECK (salary_frequency= ANY (ARRAY['Hour', 'Day', 'Month', 'Year'])),
     CONSTRAINT is_still_working_here_check CHECK (is_still_working_here = ANY (ARRAY[1, 0])),
     CONSTRAINT recommended_a_friend_check CHECK (recommended_a_friend = ANY (ARRAY[1, 0])),
     CONSTRAINT allows_remote_work_check CHECK (allows_remote_work = ANY (ARRAY[1, 0])),
-    CONSTRAINT is_legally_company_check CHECK (is_legally_company = ANY (ARRAY[1, 0])),
-    CONSTRAINT applicant_email_unique UNIQUE (applicant_email)
+    CONSTRAINT is_legally_company_check CHECK (is_legally_company = ANY (ARRAY[1, 0]))
 );
 
 ALTER TABLE IF EXISTS company_evaluations
@@ -139,3 +139,12 @@ CREATE TABLE recruitment_process_evaluations(
     CONSTRAINT recruitment_process_period_check CHECK (recruitment_process_period = ANY (ARRAY['Hour', 'Day', 'Month','Year']))
 );
 
+
+
+INSERT INTO reporting_reason_types(name) VALUES ('Suspicious, spam or fake');
+INSERT INTO reporting_reason_types(name) VALUES ('Harassment or incitement to hatred');
+INSERT INTO reporting_reason_types(name) VALUES ('Violence or physical assault');
+INSERT INTO reporting_reason_types(name) VALUES ('Violence or physical assault');
+INSERT INTO reporting_reason_types(name) VALUES ('Adult content');
+INSERT INTO reporting_reason_types(name) VALUES ('Defamation or infringement of intellectual property');
+INSERT INTO reporting_reason_types(name) VALUES ('None of the reasons for reporting apply');
