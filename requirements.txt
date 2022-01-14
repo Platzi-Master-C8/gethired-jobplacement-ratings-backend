@@ -6,3 +6,4 @@ SQLAlchemy==1.4.28
 mypy==0.910
 python-dotenv==0.19.2
 psycopg2==2.9.2
+fastapi-pagination==0.9.1
