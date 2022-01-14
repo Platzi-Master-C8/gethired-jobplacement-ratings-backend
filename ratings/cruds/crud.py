@@ -21,14 +21,14 @@ def create_company_evaluation(db: Session, company_evaluation: schemas.CompanyEv
         end_date=company_evaluation.end_date,
         is_still_working_here=company_evaluation.is_still_working_here,
         applicant_email=company_evaluation.applicant_email,
-        career_development_rating=company_evaluation.career_development_rating,
-        diversity_equal_opportunity_rating=company_evaluation.diversity_equal_opportunity_rating,
-        working_environment_rating=company_evaluation.working_environment_rating,
-        salary_rating=company_evaluation.salary_rating,
+        career_development_rating=company_evaluation.career_development_rating.value,
+        diversity_equal_opportunity_rating=company_evaluation.diversity_equal_opportunity_rating.value,
+        working_environment_rating=company_evaluation.working_environment_rating.value,
+        salary_rating=company_evaluation.salary_rating.value,
         job_location=company_evaluation.job_location,
         salary=company_evaluation.salary,
-        currency_type=company_evaluation.currency_type,
-        salary_frequency=company_evaluation.salary_frequency,
+        currency_type=company_evaluation.currency_type.value,
+        salary_frequency=company_evaluation.salary_frequency.value,
         recommended_a_friend=company_evaluation.recommended_a_friend,
         allows_remote_work=company_evaluation.allows_remote_work,
         is_legally_company=company_evaluation.is_legally_company,
@@ -39,17 +39,16 @@ def create_company_evaluation(db: Session, company_evaluation: schemas.CompanyEv
     return db_company_evaluation_instance
 
 
-def register_applicant(db: Session, applicant_body: schemas.ApplicantCreate):
-    applicant_objet = models.Applicant(
-        name=applicant_body.name,
-        email=applicant_body.email,
-        address=applicant_body.address,
-        telephone=applicant_body.telephone,
-        linkedln_url=applicant_body.linkedln_url,
-        cv_url=applicant_body.cv_url,
-        motivation_letter_url=applicant_body.motivation_letter_url
-    )
-    db.add(applicant_objet)
+def increse_utility_counter(db: Session, id: int):
+    company_evaluation = get_company_evaluation_by_id(db=db, id=id)
+    company_evaluation.utility_counter = company_evaluation.utility_counter + 1
+    db.add(company_evaluation)
     db.commit()
-    db.refresh(applicant_objet)
-    return applicant_objet
+    return company_evaluation
+
+def increse_non_utility_counter(db: Session, id: int):
+    company_evaluation = get_company_evaluation_by_id(db=db, id=id)
+    company_evaluation.non_utility_counter = company_evaluation.non_utility_counter + 1
+    db.add(company_evaluation)
+    db.commit()
+    return company_evaluation

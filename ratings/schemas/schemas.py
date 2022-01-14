@@ -1,13 +1,18 @@
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional
-from enum import Enum
 from pydantic import BaseModel, Field
+
+from ratings.routes import example
+from ratings.utils import enums
+
 
 class CompanyEvaluationBase(BaseModel):
     company_id: int = Field(
         ...,
         gt=0,
-        example=1
+        example=1,
+        title="This is the id of the provenient company",
+        extra="This field is validate to be grather than 0"
     )
     job_title: str = Field(
         ...,
@@ -18,7 +23,7 @@ class CompanyEvaluationBase(BaseModel):
     content_type: str = Field(
         ...,
         max_length=280,
-        example= "Muy buena Empresa Para Trabajar remoto"
+        example="Excellent company, they are very united and loyal to their values and their culture of never stop learning."
     )
     start_date: date = Field(
         ...,
@@ -39,21 +44,21 @@ class CompanyEvaluationBase(BaseModel):
 class CompanyEvaluationCreate(CompanyEvaluationBase):
     applicant_email: str = Field(
         ...,
-        example="anabelisa@gmail.com"
+        example="maribel@gmail.com"
     )
-    career_development_rating: str = Field(
+    career_development_rating: enums.CompanyRatingType = Field(
         ...,
         example="Good"
     )
-    diversity_equal_opportunity_rating: str = Field(
+    diversity_equal_opportunity_rating: enums.CompanyRatingType = Field(
         ...,
         example="Good"
     )
-    working_environment_rating: str = Field(
+    working_environment_rating: enums.CompanyRatingType = Field(
         ...,
         example="Good"
     )
-    salary_rating: str = Field(
+    salary_rating: enums.CompanyRatingType = Field(
         ...,
         example="Good"
     )
@@ -65,11 +70,11 @@ class CompanyEvaluationCreate(CompanyEvaluationBase):
         ...,
         example=2500
     )
-    currency_type: str = Field(
+    currency_type: enums.CurrencyCodeISO4217 = Field(
         ...,
         example="USD"
     )
-    salary_frequency: str = Field(
+    salary_frequency: enums.SalaryFrecuency = Field(
         ...,
         example="Month"
     )
@@ -93,31 +98,24 @@ class CompanyEvaluationCreate(CompanyEvaluationBase):
     )
 
 
-class CompanyEvaluation(CompanyEvaluationBase):
-    id: int = Field(
-        gt=0
+class CompanyEvaluationOut(CompanyEvaluationBase):
+    utility_counter: Optional[int] = Field(
+        None,
+        example=15,
+        title="Represents the number of times the evaluation was rated as useful.",
     )
-
-    class Config:
-        orm_mode = True
-
-
-class ApplicantBase(BaseModel):
-    name: str
-    email: str
-    address: str
-    telephone: Optional[int] = None
-    linkedln_url: Optional[str] = None
-    cv_url: Optional[str]
-    motivation_letter_url: Optional[str] = None
-
-
-class ApplicantCreate(ApplicantBase):
-    pass
-
-
-class Applicant(ApplicantBase):
-    id: int
+    non_utility_counter: Optional[int] = Field(
+        None,
+        example=2,
+        title="Represents the number of times the evaluation was rated as not useful.",
+    )
+    created_at: Optional[datetime] = Field(
+        default= datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    id: int = Field(
+        gt=0,
+        example=1
+    )
 
     class Config:
         orm_mode = True
