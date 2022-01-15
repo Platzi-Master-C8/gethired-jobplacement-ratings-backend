@@ -60,3 +60,7 @@ def increase_evaluation_non_utility_rating(db: Session, company_evaluation_id: i
     db.commit()
 
     return company_evaluation
+
+
+def get_all_reposting_reason_types(db: Session):
+    return db.query(models.ReportingReasonType).all()

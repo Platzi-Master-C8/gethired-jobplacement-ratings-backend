@@ -110,10 +110,40 @@ class CompanyEvaluationOut(CompanyEvaluationBase):
         title="Represents the number of times the evaluation was rated as not useful.",
     )
     created_at: Optional[datetime] = Field(
-        default= datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        default=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     id: int = Field(
         gt=0,
+        example=1
+    )
+
+    class Config:
+        orm_mode = True
+
+
+class ReportingReasonTypeBase(BaseModel):
+    name: str = Field(
+        ...,
+        min_length=10,
+        max_length=70,
+        title="Name of the reason type of report",
+        example="Suspicious, spam or fake"
+    )
+
+
+class ReportingReasonTypeCreate(ReportingReasonTypeBase):
+    description: Optional[str] = Field(
+        min_length=10,
+        max_length=150,
+        title="Description of the reporting reason type"
+    )
+
+
+class ReportingReasonTypeOut(ReportingReasonTypeBase):
+    id: int = Field(
+        ...,
+        gt=0,
+        title="This is the identifier of a Reportig Reason Type",
         example=1
     )
 
