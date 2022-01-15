@@ -99,3 +99,57 @@ def get_company_evaluations_by_company_id(
 
 
 add_pagination(app)
+
+
+@app.patch(
+    path="/companyEvaluations/{id}/increaseUtilityRating/",
+    response_model=schemas.CompanyEvaluationOut,
+    status_code=status.HTTP_200_OK,
+    tags=["Company Evaluations"],
+    summary="Increase in one point the utility of one company evaluation."
+)
+def increse_evaluation_utility_rating(
+    session_local_db: Session = Depends(get_database_session),
+    id: int = Path(
+        ...,
+        gt=0,
+        example=1,
+        title="This is the id of the company Evaluation",
+        description="This is the id of the company evaluation"
+    )
+):
+    company_evaluation = crud.get_company_evaluation_by_id(
+        db=session_local_db, id=id)
+    if company_evaluation is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Company Evaluation not found"
+        )
+    return crud.increse_evaluation_utility_rating(db=session_local_db, company_evaluation_id=id)
+
+
+@app.patch(
+    path="/companyEvaluations/{id}/increaseNonUtilityRating/",
+    response_model=schemas.CompanyEvaluationOut,
+    status_code=status.HTTP_200_OK,
+    tags=["Company Evaluations"],
+    summary="Increase in one point the non-utility of one company evaluation."
+)
+def increse_evaluation_non_utility_rating(
+    session_local_db: Session = Depends(get_database_session),
+    id: int = Path(
+        ...,
+        gt=0,
+        example=1,
+        title="This is the id of the company Evaluation",
+        description="This is the id of the company evaluation"
+    )
+):
+    company_evaluation = crud.get_company_evaluation_by_id(
+        db=session_local_db, id=id)
+    if company_evaluation is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Company Evaluation not found"
+        )
+    return crud.increase_evaluation_non_utility_rating(db=session_local_db, company_evaluation_id=id)
