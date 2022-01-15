@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-
 from ratings.models import models
 from ratings.schemas import schemas
 
@@ -36,19 +35,28 @@ def create_company_evaluation(db: Session, company_evaluation: schemas.CompanyEv
     db.add(db_company_evaluation_instance)
     db.commit()
     db.refresh(db_company_evaluation_instance)
+
     return db_company_evaluation_instance
 
 
-def increse_utility_counter(db: Session, id: int):
-    company_evaluation = get_company_evaluation_by_id(db=db, id=id)
-    company_evaluation.utility_counter = company_evaluation.utility_counter + 1
+def increse_evaluation_utility_rating(db: Session, company_evaluation_id: int):
+
+    company_evaluation = get_company_evaluation_by_id(
+        db=db, id=company_evaluation_id)
+    company_evaluation.utility_counter += 1
     db.add(company_evaluation)
     db.commit()
     return company_evaluation
 
-def increse_non_utility_counter(db: Session, id: int):
-    company_evaluation = get_company_evaluation_by_id(db=db, id=id)
-    company_evaluation.non_utility_counter = company_evaluation.non_utility_counter + 1
+
+def increase_evaluation_non_utility_rating(db: Session, company_evaluation_id: int):
+
+    company_evaluation = get_company_evaluation_by_id(
+        db=db,
+        id=company_evaluation_id
+    )
+    company_evaluation.non_utility_counter += 1
     db.add(company_evaluation)
     db.commit()
+
     return company_evaluation
