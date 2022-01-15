@@ -153,3 +153,14 @@ def increse_evaluation_non_utility_rating(
             detail="Company Evaluation not found"
         )
     return crud.increase_evaluation_non_utility_rating(db=session_local_db, company_evaluation_id=id)
+
+
+@app.get(
+    path="/reportingReasonTypes/",
+    response_model=List[schemas.ReportingReasonTypeOut],
+    status_code=status.HTTP_200_OK,
+    tags=["Reporting Reason Types"],
+    summary="Get a list of Reporting reason Types."
+)
+def get_reporting_reason_types(session_local_db: Session = Depends(get_database_session)):
+    return crud.get_all_reposting_reason_types(db=session_local_db)

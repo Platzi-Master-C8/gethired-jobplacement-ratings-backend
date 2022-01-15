@@ -28,4 +28,20 @@ class CompanyEvaluation(Base):
     is_legally_company = Column(Integer, nullable=false)
     utility_counter = Column(Integer, default=0)
     non_utility_counter = Column(Integer, default=0)
-    created_at = Column(TIMESTAMP(timezone=False), nullable=False, server_default=text('now()'))
+    created_at = Column(
+        TIMESTAMP(timezone=False),
+        nullable=False,
+        server_default=text('now()')
+    )
+
+
+class ReportingReasonType(Base):
+    __tablename__ = "reporting_reason_types"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(70), nullable=False)
+    created_at = Column(
+        TIMESTAMP(timezone=False),
+        nullable=False,
+        server_default=text('now()')
+    )
