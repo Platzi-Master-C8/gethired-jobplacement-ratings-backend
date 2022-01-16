@@ -164,3 +164,49 @@ def increse_evaluation_non_utility_rating(
 )
 def get_reporting_reason_types(session_local_db: Session = Depends(get_database_session)):
     return crud.get_all_reposting_reason_types(db=session_local_db)
+
+
+@app.post(
+    path="/companyEvaluation/{id}/complaints/",
+    response_model=schemas.ComplaintOut,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Company Evaluations"],
+    summary="create a company evaluation complaint"
+)
+def create_a_company_evaluation_report(
+    session_local_db: Session = Depends(get_database_session),
+    complaint_body: schemas.ComplaintCreate = Body(...),
+    id: int = Path(
+        ...,
+        gt=0,
+        title="Company Evaluation Id",
+        description="This is id of a company evaluation"
+    )
+):
+    reporting_reason_type_id = crud.get_reporting_reason_by_id(
+        db=session_local_db,
+        reporting_reason_type_id=complaint_body.reporting_reason_type_id
+    )
+
+    if reporting_reason_type_id is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Reporting Reason Type id not Found"
+        )
+
+    company_evaluation_id = crud.get_company_evaluation_by_id(
+        db=session_local_db,
+        id=id
+    )
+
+    if company_evaluation_id is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Company Evaluation not found"
+        )
+
+    return crud.create_complaint(
+        db=session_local_db,
+        complaint_body=complaint_body,
+        company_evaluation_id=id
+    )
