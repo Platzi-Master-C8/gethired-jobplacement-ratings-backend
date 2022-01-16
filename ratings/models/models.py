@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DECIMAL, false, Date
+from sqlalchemy import Column, Integer, String, DECIMAL, false, Date, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql.expression import text
 from ratings.config.database import Base
@@ -34,12 +35,71 @@ class CompanyEvaluation(Base):
         server_default=text('now()')
     )
 
+    complaints = relationship(
+        "Complaint",
+        secondary="company_evaluation_complaint",
+    )
+
 
 class ReportingReasonType(Base):
     __tablename__ = "reporting_reason_types"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(70), nullable=False)
+    created_at = Column(
+        TIMESTAMP(timezone=False),
+        nullable=False,
+        server_default=text('now()')
+    )
+
+    items = relationship("Complaint", back_populates="type_report")
+
+
+class Complaint(Base):
+    __tablename__ = 'complaints'
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+    problem_description = Column(
+        String(70),
+        nullable=False
+    )
+    email = Column(
+        String(70),
+        nullable=False
+    )
+    created_at = Column(
+        TIMESTAMP(timezone=False),
+        nullable=False,
+        server_default=text('now()')
+    )
+    reporting_reason_type_id = Column(
+        Integer,
+        ForeignKey("reporting_reason_types.id")
+    )
+
+    type_report = relationship("ReportingReasonType", back_populates="items")
+
+
+class CompanyEvaluationComplaint(Base):
+    __tablename__ = "company_evaluation_complaint"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+    company_evaluation_id = Column(
+        Integer,
+        ForeignKey("company_evaluations.id")
+    )
+    complaint_id = Column(
+        Integer,
+        ForeignKey("complaints.id")
+    )
     created_at = Column(
         TIMESTAMP(timezone=False),
         nullable=False,

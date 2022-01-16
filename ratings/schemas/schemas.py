@@ -149,3 +149,41 @@ class ReportingReasonTypeOut(ReportingReasonTypeBase):
 
     class Config:
         orm_mode = True
+
+
+class ComplaintBase(BaseModel):
+    reporting_reason_type_id: int = Field(
+        ...,
+        gt=0,
+        title="This is the id of one valid Reporting Reason Type",
+        example=1
+    )
+    problem_description: str = Field(
+        ...,
+        min_length=10,
+        max_length=70,
+        description="Description of the problem with the company evaluation",
+        example="It is a fake evaluation"
+    )
+    email: str = Field(
+        ...,
+        min_length=11,
+        max_length=70,
+        example="email@gmail.com"
+    )
+
+
+class ComplaintCreate(ComplaintBase):
+    pass
+
+
+class ComplaintOut(ComplaintBase):
+    id: int = Field(
+        ...,
+        gt=0,
+        title="Complaint Id",
+        example=1
+    )
+
+    class Config:
+        orm_mode = True
