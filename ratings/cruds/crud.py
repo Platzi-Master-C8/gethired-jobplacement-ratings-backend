@@ -64,3 +64,38 @@ def increase_evaluation_non_utility_rating(db: Session, company_evaluation_id: i
 
 def get_all_reposting_reason_types(db: Session):
     return db.query(models.ReportingReasonType).all()
+
+
+def get_reporting_reason_by_id(db: Session, reporting_reason_type_id: int):
+    return db.query(models.ReportingReasonType).filter(models.ReportingReasonType.id == reporting_reason_type_id).first()
+
+
+def create_complaint(db: Session, complaint_body: schemas.ComplaintCreate, company_evaluation_id: int) -> dict:
+    """Create a complaint for a company evaluation
+
+    Args:
+        db (Session): Instance of the database which all us manage and persist operation in the ORM
+        complaint_body (schemas.complaintCreate): Request body to create a complaint using pydantic models
+        company_evaluation_id (int): The id of the company evaluation to attach a complaint
+
+    Returns:
+        dict: Complaint made to the company's evaluation
+    """
+
+    company_evaluation = get_company_evaluation_by_id(
+        db=db,
+        id=company_evaluation_id
+    )
+
+    complaint = models.Complaint(
+        reporting_reason_type_id=complaint_body.reporting_reason_type_id,
+        problem_description=complaint_body.problem_description,
+        email=complaint_body.email
+    )
+
+    company_evaluation.complaints.append(complaint)
+    db.add(complaint)
+    db.commit()
+    db.refresh(complaint)
+
+    return complaint
