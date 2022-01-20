@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 from ratings.routes import example
 from ratings.utils import enums
@@ -42,7 +42,7 @@ class CompanyEvaluationBase(BaseModel):
 
 
 class CompanyEvaluationCreate(CompanyEvaluationBase):
-    applicant_email: str = Field(
+    applicant_email: EmailStr = Field(
         ...,
         example="maribel@gmail.com"
     )
