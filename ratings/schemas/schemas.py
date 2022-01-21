@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, condecimal
 
 from ratings.routes import example
 from ratings.utils import enums
@@ -66,9 +66,9 @@ class CompanyEvaluationCreate(CompanyEvaluationBase):
         ...,
         example="México"
     )
-    salary: int = Field(
+    salary: condecimal(gt=0, max_digits=12, decimal_places=2) = Field(
         ...,
-        example=2500
+        example=2500.00,
     )
     currency_type: enums.CurrencyCodeISO4217 = Field(
         ...,
