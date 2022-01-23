@@ -29,7 +29,7 @@ CREATE TABLE company_evaluations
     is_legally_company smallint NOT NULL,
     utility_counter BIGINT,
     non_utility_counter BIGINT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id),
     CONSTRAINT career_development_rating_check CHECK (career_development_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
     CONSTRAINT diversity_equal_opportunity_rating_check CHECK (diversity_equal_opportunity_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
@@ -55,7 +55,7 @@ CREATE TABLE applicants (
     linkedln_url VARCHAR(150),
     cv_url VARCHAR(150) NOT NULL,
     motivation_letter_url VARCHAR(150),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id),
     CONSTRAINT email_unique UNIQUE (email)
 );
@@ -64,7 +64,7 @@ CREATE TABLE reporting_reason_types(
     id bigserial NOT NULL,
     name VARCHAR(70) not NULL,
     description VARCHAR(150),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -73,7 +73,7 @@ CREATE TABLE complaints(
     reporting_reason_type_id BIGINT NOT NULL,
     problem_description VARCHAR(70) NOT NULL,
     email VARCHAR(70) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY(id),
     FOREIGN KEY (reporting_reason_type_id) REFERENCES reporting_reason_types(id)
 );
@@ -91,7 +91,7 @@ CREATE TABLE company_applicant_evaluation(
     motivation_rating SMALLINT NOT NULL,
     self_knowledge_rating SMALLINT NOT NULL,
     hard_skill_rating SMALLINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY(applicant_id) REFERENCES applicants(id),
     CONSTRAINT is_hired_check CHECK (is_hired = ANY (ARRAY[1,0])),
@@ -108,7 +108,7 @@ CREATE TABLE company_evaluation_complaint (
     id bigserial NOT NULL,
     company_evaluation_id BIGINT NOT NULL,
     complaint_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (company_evaluation_id) REFERENCES company_evaluations(id),
     FOREIGN KEY (complaint_id) REFERENCES complaints(id)
@@ -128,7 +128,7 @@ CREATE TABLE recruitment_process_evaluations(
     is_legally_company SMALLINT NOT NULL,
     amount_of_recruitment_time INTEGER NOT NULL,
     recruitment_process_period VARCHAR(15) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (applicant_id) REFERENCES applicants(id),
     CONSTRAINT allows_remote_work_check CHECK (allows_remote_work = ANY (ARRAY[1,0])),
