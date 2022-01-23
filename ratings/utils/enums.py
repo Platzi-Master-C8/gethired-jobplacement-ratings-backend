@@ -15,7 +15,7 @@ class CurrencyCodeISO4217(Enum):
     eur = "EUR"
 
 
-class SalaryFrecuency(Enum):
+class SalaryFrequency(Enum):
     hour = "Hour"
     day = "Day"
     month = "Month"
