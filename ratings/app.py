@@ -37,8 +37,21 @@ def get_database_session():
 
 
 @app.get(
-    path="/api/v1/companies/{id}/company-evaluations",
+    path="/api/v1/companies/{id}/general-ratings",
     tags=["Companies"],
+    status_code=status.HTTP_200_OK,
+    summary="Get the general ratings from a company",
+)
+def get_general_ratings():
+    pass
+
+
+# Company Evaluations Path Operations
+
+
+@app.get(
+    path="/api/v1/companies/{id}/company-evaluations",
+    tags=["Company Evaluations"],
     status_code=status.HTTP_200_OK,
     response_model=Page[schemas.CompanyEvaluationOut],
     summary="Get Company Evaluations By Company ID",
@@ -59,7 +72,7 @@ add_pagination(app)
 
 @app.post(
     path="/api/v1/companies/{id}/company-evaluation",
-    tags=["Companies"],
+    tags=["Company Evaluations"],
     status_code=status.HTTP_201_CREATED,
     response_model=schemas.CompanyEvaluationOut,
     response_description="The created company evaluation",
@@ -167,25 +180,12 @@ def increse_evaluation_non_utility_rating(
     )
 
 
-@app.get(
-    path="/api/v1/reporting-reason-types",
-    response_model=List[schemas.ReportingReasonTypeOut],
-    status_code=status.HTTP_200_OK,
-    tags=["Reporting Reason Types"],
-    summary="Get the List of Reporting Reason Types",
-)
-def get_reporting_reason_types(
-    session_local_db: Session = Depends(get_database_session),
-):
-    return crud.get_all_reporting_reason_types(db=session_local_db)
-
-
 @app.post(
     path="/api/v1/company-evaluation/{id}/complaints",
     response_model=schemas.ComplaintOut,
     status_code=status.HTTP_201_CREATED,
     tags=["Company Evaluations"],
-    summary="Create a Company Evaluation Complaint",
+    summary="Create a complaint to a company evaluation",
 )
 def create_a_company_evaluation_report(
     session_local_db: Session = Depends(get_database_session),
@@ -218,3 +218,57 @@ def create_a_company_evaluation_report(
     return crud.create_complaint(
         db=session_local_db, complaint_body=complaint_body, company_evaluation_id=id
     )
+
+
+# Reporting Reason type Path operation
+
+
+@app.get(
+    path="/api/v1/reporting-reason-types",
+    response_model=List[schemas.ReportingReasonTypeOut],
+    status_code=status.HTTP_200_OK,
+    tags=["Reporting Reason Types"],
+    summary="Get the List of Reporting Reason Types",
+)
+def get_reporting_reason_types(
+    session_local_db: Session = Depends(get_database_session),
+):
+    return crud.get_all_reporting_reason_types(db=session_local_db)
+
+
+# Applicants path operations
+
+
+@app.post(
+    path="/api/v1/applicants",
+    tags=["Applicants"],
+    status_code=status.HTTP_201_CREATED,
+)
+def register_applicants():
+    pass
+
+
+@app.post(
+    path="/api/v1/applicants/{id}/applicant-evaluation",
+    tags=["Applicants"],
+    status_code=status.HTTP_201_CREATED,
+)
+def create_applicant_evaluation():
+    pass
+
+
+@app.post(
+    path="/api/v1/companies/{id}/recruitment-process-evaluation",
+    tags=["Applicants"],
+)
+def create_recruitment_process_evaluation():
+    pass
+
+
+@app.get(
+    path="/api/v1/applicants/{tracking_code}/{paternal_last_name}/applicant-review",
+    tags=["Applicants"],
+    status_code=status.HTTP_200_OK,
+)
+def get_applicant_review_resolution():
+    pass
