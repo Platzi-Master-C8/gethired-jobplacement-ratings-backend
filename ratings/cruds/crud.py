@@ -1,4 +1,5 @@
 # Python
+from itertools import count
 import os
 
 # Typing
@@ -57,11 +58,21 @@ def get_company_evaluation_by_id(db: Session, id: int):
 
 
 def get_company_evaluations_by_company_id(db: Session, company_id: int):
-    return (
-        db.query(models.CompanyEvaluation)
-        .filter(models.CompanyEvaluation.company_id == company_id)
-        .all()
-    )
+    if check_company_id_exist(company_id) != -1:
+
+        try:
+            list_of_company_evaluations = (
+                db.query(models.CompanyEvaluation)
+                .filter(models.CompanyEvaluation.company_id == company_id)
+                .all()
+            )
+
+            return list_of_company_evaluations
+
+        except SQLAlchemyError as error:
+            raise error
+    else:
+        raise HTTPException(status_code=404, detail="Company Not Found")
 
 
 def create_company_evaluation(

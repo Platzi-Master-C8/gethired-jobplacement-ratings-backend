@@ -5,6 +5,8 @@ from typing import List, Optional
 # FastAPI
 from fastapi import FastAPI, Depends, HTTPException, status, Path, Body, Query
 from fastapi_pagination import Page, add_pagination, paginate
+from fastapi.responses import JSONResponse
+
 
 # SQLAlchemy
 from sqlalchemy.orm import Session
@@ -64,6 +66,12 @@ def get_company_evaluations_by_company_id(
     company_evaluations = crud.get_company_evaluations_by_company_id(
         session_local_db, company_id=id
     )
+    if len(company_evaluations) == 0:
+        return JSONResponse(
+            status_code=200,
+            content={"message": "No evaluations have been added to this company yet"},
+        )
+
     return paginate(company_evaluations)
 
 
