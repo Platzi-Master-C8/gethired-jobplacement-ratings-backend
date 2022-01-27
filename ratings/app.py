@@ -1,4 +1,5 @@
 # Python
+from operator import gt
 from typing import List, Optional
 
 # FastAPI
@@ -32,6 +33,9 @@ def get_database_session():
         session_local_db.close()
 
 
+# Companies Path operations
+
+
 @app.get(
     path="/api/v1/companies/{id}/company-evaluations",
     tags=["Companies"],
@@ -54,8 +58,8 @@ add_pagination(app)
 
 
 @app.post(
-    path="/api/v1/company-evaluations",
-    tags=["Company Evaluations"],
+    path="/api/v1/companies/{id}/company-evaluation",
+    tags=["Companies"],
     status_code=status.HTTP_201_CREATED,
     response_model=schemas.CompanyEvaluationOut,
     response_description="The created company evaluation",
@@ -64,13 +68,12 @@ add_pagination(app)
 def create_company_evaluation(
     company_evaluation: schemas.CompanyEvaluationCreate = Body(...),
     session_local_db: Session = Depends(get_database_session),
+    id: int = Path(..., gt=0, title="Company ID", description="Compnay ID"),
 ):
     """
-    ## Create a Company Evaluation
+    This Path Operation create a company evaluation.
 
-    This Path Operation create a company evaluation and save the information in the database.
-
-    ## Parameters:
+    # Parameters:
     - Request body parameter:
         - **company_id: int** (required) The id of the company to which this assessment belongs.
         - **job_title: str** (required) -> The name of the position you have or had in the company.
@@ -92,22 +95,22 @@ def create_company_evaluation(
         - **is_legally_company: int** (required) -> The type of currency in which the company is paid.
 
 
-    ## Returns:
-    - A dictionary with the attributes:
-        - company_id
-        - job_title
-        - content_type
-        - start_date
-        - end_date
-        - is_still_working_here
-        - utility_counter
-        - non_utility_counter
-        - created_at
-        - id
+    # Returns:
+    - The company evaluation created with this structure
+        - company_id: int
+        - job_title:  str
+        - content_type: str
+        - start_date: date
+        - end_date: date
+        - is_still_working_here: int
+        - utility_counter: int
+        - non_utility_counter: int
+        - created_at: datetime
+        - id: int
 
     """
     return crud.create_company_evaluation(
-        db=session_local_db, company_evaluation=company_evaluation
+        db=session_local_db, company_evaluation=company_evaluation, company_id=id
     )
 
 
