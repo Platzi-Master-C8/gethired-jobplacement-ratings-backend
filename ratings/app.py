@@ -1,9 +1,9 @@
 # Python
-from operator import gt
 from typing import List, Optional
 
 # FastAPI
 from fastapi import FastAPI, Depends, HTTPException, status, Path, Body, Query
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 from fastapi.responses import JSONResponse
 
@@ -24,6 +24,14 @@ models.Base.metadata.create_all(engine)
 
 app: FastAPI = FastAPI(
     title="Jobplacement - Ratings API",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
