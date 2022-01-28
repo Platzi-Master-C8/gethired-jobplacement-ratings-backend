@@ -96,7 +96,6 @@ def create_company_evaluation(
 
     # Parameters:
     - Request body parameter:
-        - **company_id: int** (required) The id of the company to which this assessment belongs.
         - **job_title: str** (required) -> The name of the position you have or had in the company.
         - **content_type: str** (required) -> The content of the evaluation to be added to the company's.
         - **start_date: date** (required) -> The date on which the person started working with the company.
@@ -112,13 +111,12 @@ def create_company_evaluation(
         - **currency_type: CurrencyCodeISO4217** (required) -> The type of currency in which the company is paid.
         - **salary_frequency: SalaryFrequency** (required) -> The type of currency in which the company is paid.
         - **recommended_a_friend: int** (required) -> The type of currency in which the company is paid.
-        - **recommended_a_friend: int** (required) -> The type of currency in which the company is paid.
+        - **allows_remote_work: int** (required) -> The company operates a remote work scheme.
         - **is_legally_company: int** (required) -> The type of currency in which the company is paid.
 
 
     # Returns:
     - The company evaluation created with this structure
-        - company_id: int
         - job_title:  str
         - content_type: str
         - start_date: date
@@ -127,6 +125,7 @@ def create_company_evaluation(
         - utility_counter: int
         - non_utility_counter: int
         - created_at: datetime
+        - company_id: int
         - id: int
 
     """

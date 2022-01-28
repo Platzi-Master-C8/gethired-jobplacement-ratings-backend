@@ -11,13 +11,6 @@ from ratings.utils import enums
 
 
 class CompanyEvaluationBase(BaseModel):
-    company_id: int = Field(
-        ...,
-        gt=0,
-        example=1,
-        title="Company id",
-        extra="This field is validate to be grater than 0",
-    )
     job_title: str = Field(..., min_length=3, max_length=70, example="Backend Engineer")
     content_type: str = Field(
         ...,
@@ -63,7 +56,15 @@ class CompanyEvaluationOut(CompanyEvaluationBase):
     created_at: Optional[datetime] = Field(
         None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
+    company_id: int = Field(
+        ...,
+        gt=0,
+        example=1,
+        title="Company id",
+        extra="This field is validate to be grater than 0",
+    )
     id: int = Field(gt=0, example=1)
+    
 
     class Config:
         orm_mode = True
