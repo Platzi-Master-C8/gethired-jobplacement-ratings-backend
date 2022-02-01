@@ -80,3 +80,22 @@ class CompanyEvaluationComplaint(Base):
     id = Column(Integer, primary_key=True, index=True)
     company_evaluation_id = Column(Integer, ForeignKey("company_evaluations.id"))
     complaint_id = Column(Integer, ForeignKey("complaints.id"))
+
+
+class Applicant(Base):
+    """ "Applicants"""
+
+    __tablename__ = "applicants"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(40), nullable=False)
+    paternal_last_name = Column(String(40), nullable=False)
+    maternal_last_name = Column(String(40), nullable=False)
+    tracking_code = Column(String(8), nullable=False)
+    email = Column(String(70), nullable=False)
+    address = Column(String(150), nullable=False)
+    cellphone = Column(String(10), nullable=True)
+    linkedln_url = Column(String(2083), nullable=True)
+    cv_url = Column(String(150), nullable=False)
+    motivation_letter_url = Column(String(150), nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
