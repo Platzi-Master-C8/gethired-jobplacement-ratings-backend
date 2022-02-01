@@ -138,7 +138,6 @@ class ApplicantBase(BaseModel):
     cellphone: int = Field(..., title="Cellphone", example="7441487566")
     linkedln_url: HttpUrl = Field(
         default=None,
-        max_length=150,
         title="Linkedln URL",
         example="https://www.linkedin.com/in/javieramayapat/",
     )
