@@ -48,16 +48,19 @@ ALTER TABLE IF EXISTS company_evaluations
 
 CREATE TABLE applicants (
     id bigserial NOT NULL,
-    name VARCHAR(70) NOT NULL,
+    name VARCHAR(40) NOT NULL,
+    paternal_last_name VARCHAR(40) NOT NULL,
+    maternal_last_name VARCHAR(40),
+    tracking_code VARCHAR(8) NOT NULL,
     email VARCHAR(70) NOT NULL,
     address VARCHAR(150),
-    telephone VARCHAR(10) NOT NULL,
+    cellphone VARCHAR(10) NOT NULL,
     linkedln_url VARCHAR(150),
     cv_url VARCHAR(150) NOT NULL,
     motivation_letter_url VARCHAR(150),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id),
-    CONSTRAINT email_unique UNIQUE (email)
+    CONSTRAINT tracking_code_unique UNIQUE (tracking_code)
 );
 
 CREATE TABLE reporting_reason_types(
@@ -79,7 +82,7 @@ CREATE TABLE complaints(
 );
 
 
-CREATE TABLE company_applicant_evaluation(
+CREATE TABLE applicant_evaluations(
     id bigserial NOT NULL,
     company_id BIGINT NOT NULL,
     applicant_id BIGINT NOT NULL,
@@ -143,7 +146,6 @@ CREATE TABLE recruitment_process_evaluations(
 
 INSERT INTO reporting_reason_types(name) VALUES ('Suspicious, spam or fake');
 INSERT INTO reporting_reason_types(name) VALUES ('Harassment or incitement to hatred');
-INSERT INTO reporting_reason_types(name) VALUES ('Violence or physical assault');
 INSERT INTO reporting_reason_types(name) VALUES ('Violence or physical assault');
 INSERT INTO reporting_reason_types(name) VALUES ('Adult content');
 INSERT INTO reporting_reason_types(name) VALUES ('Defamation or infringement of intellectual property');
