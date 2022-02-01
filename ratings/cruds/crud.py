@@ -1,6 +1,6 @@
 # Python
-from itertools import count
 import os
+import random
 
 # Typing
 from typing import Dict, List
@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 # Project
 from ratings.models import models
 from ratings.schemas import schemas
+import ratings.utils
+from ratings.utils.utils import Util
 
 
 load_dotenv()
@@ -55,6 +57,10 @@ def get_company_evaluation_by_id(db: Session, id: int):
         .filter(models.CompanyEvaluation.id == id)
         .first()
     )
+
+
+def get_applicant_by_id(db: Session, id: int):
+    return db.query(models.Applicant).filter(models.Applicant.id == id).first()
 
 
 def get_company_evaluations_by_company_id(db: Session, company_id: int):
@@ -190,3 +196,38 @@ def create_complaint(
         raise error
 
     return complaint
+
+
+def create_applicant(
+    db: Session,
+    name: str,
+    paternal_last_name: str,
+    maternal_last_name: str,
+    email: str,
+    address: str,
+    cellphone: int,
+    linkedln_url: str,
+    motivation_letter_url: str,
+    cv_url: str,
+):
+    try:
+        applicant = models.Applicant(
+            name=name.capitalize().strip(),
+            paternal_last_name=paternal_last_name.capitalize().strip(),
+            maternal_last_name=maternal_last_name.capitalize().strip(),
+            tracking_code=Util.create_tracking_code(),
+            email=email.lower().strip(),
+            address=address.strip(),
+            cellphone=cellphone,
+            linkedln_url=linkedln_url,
+            cv_url=cv_url,
+            motivation_letter_url=motivation_letter_url,
+        )
+        db.add(applicant)
+        db.commit()
+        db.refresh(applicant)
+
+    except SQLAlchemyError as Error:
+        raise Error
+
+    return applicant

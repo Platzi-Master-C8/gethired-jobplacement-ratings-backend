@@ -1,11 +1,26 @@
 # Python
 from typing import List, Optional
+import os
+import time
+
 
 # FastAPI
-from fastapi import FastAPI, Depends, HTTPException, status, Path, Body, Query
+from fastapi import (
+    FastAPI,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    UploadFile,
+    status,
+    Path,
+    Body,
+    Query,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 from fastapi.responses import JSONResponse
+from sqlalchemy import null
 
 
 # SQLAlchemy
@@ -97,7 +112,7 @@ add_pagination(app)
 def create_company_evaluation(
     company_evaluation: schemas.CompanyEvaluationCreate = Body(...),
     session_local_db: Session = Depends(get_database_session),
-    id: int = Path(..., gt=0, title="Company ID", description="Compnay ID"),
+    id: int = Path(..., gt=0, title="Company ID", description="Company ID"),
 ):
     """
     This Path Operation create a company evaluation.
@@ -256,11 +271,56 @@ def get_reporting_reason_types(
 
 @app.post(
     path="/api/v1/applicants",
-    tags=["Applicants"],
+    response_model=schemas.ApplicantOut,
     status_code=status.HTTP_201_CREATED,
+    tags=["Applicants"],
+    summary="Register an Applicant who applies to a vacancy.",
 )
-def register_applicants():
-    pass
+def register_applicants(
+    name: str = Form(..., max_length=40,title="Applicant Name"),
+    paternal_last_name: str = Form(..., max_length=40),
+    maternal_last_name: str = Form(..., max_length=40),
+    email: str = Form(...,max_length=70,title="Email"),
+    address: str = Form(default=None, max_length=150, title="Address"),
+    cellphone: int = Form(...),
+    linkedln_url: str = Form(default=None,max_length=150),
+    cv_file: UploadFile = File(...,title="CV File"),
+    motivation_letter_file: UploadFile = File(default=None,title="Motivation Letter"),
+    session_local_db: Session = Depends(get_database_session),
+):
+    # Save the cv files
+    if cv_file.content_type not in ["application/pdf"]:
+        raise HTTPException(400, detail="Invalid document type")
+    else:
+        file_location_cv = f"ratings/files/cv_{int(time.time())}.pdf"
+        with open(file_location_cv, "wb+") as file_object:
+            file_object.write(cv_file.file.read())
+
+
+    # Save the motivation letter
+    if not motivation_letter_file:
+        file_location_motivation_letter = None
+        
+    elif motivation_letter_file.content_type not in ["application/pdf"]:
+        raise HTTPException(400, detail="Invalid document type")
+    
+    else:
+        file_location_motivation_letter = ( f"ratings/files/ml_{int(time.time())}.pdf")
+        with open(file_location_motivation_letter, "wb+") as file_object:
+            file_object.write(motivation_letter_file.file.read())
+
+    return crud.create_applicant(
+        db=session_local_db,
+        name=name,
+        paternal_last_name=paternal_last_name,
+        maternal_last_name=maternal_last_name,
+        email=email,
+        address=address,
+        cellphone=cellphone,
+        linkedln_url=linkedln_url,
+        cv_url=file_location_cv,
+        motivation_letter_url=file_location_motivation_letter,
+    )
 
 
 @app.post(
