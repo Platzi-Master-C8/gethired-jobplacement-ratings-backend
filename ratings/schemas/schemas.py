@@ -131,6 +131,7 @@ class ApplicantBase(BaseModel):
     )
     email: EmailStr = Field(..., example="javieramayapat@gmail.com")
     address: str = Field(
+        default=None,
         max_length=150,
         title="Address",
         example="CARRERA 7 71 21 PISO 18 TORRE A, BOGOTA, BOGOTA",

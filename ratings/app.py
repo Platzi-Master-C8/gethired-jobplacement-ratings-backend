@@ -308,7 +308,7 @@ def register_applicants(
     if cv_file.content_type not in ["application/pdf"]:
         raise HTTPException(400, detail="Invalid document type")
     else:
-        file_location_cv = f"ratings/files/cv_{int(time.time())}.pdf"
+        file_location_cv = f"./ratings/doc/cv_{int(time.time())}.pdf"
         with open(file_location_cv, "wb+") as file_object:
             file_object.write(cv_file.file.read())
 
@@ -320,7 +320,7 @@ def register_applicants(
         raise HTTPException(400, detail="Invalid document type")
 
     else:
-        file_location_motivation_letter = f"ratings/files/ml_{int(time.time())}.pdf"
+        file_location_motivation_letter = f"./ratings/doc/ml_{int(time.time())}.pdf"
         with open(file_location_motivation_letter, "wb+") as file_object:
             file_object.write(motivation_letter_file.file.read())
 

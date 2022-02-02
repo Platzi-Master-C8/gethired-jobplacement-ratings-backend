@@ -251,7 +251,7 @@ def create_applicant(
             maternal_last_name=maternal_last_name.capitalize().strip(),
             tracking_code=Util.create_tracking_code(),
             email=email.lower().strip(),
-            address=address.strip(),
+            address=address,
             cellphone=cellphone,
             linkedln_url=linkedln_url,
             cv_url=cv_url,
