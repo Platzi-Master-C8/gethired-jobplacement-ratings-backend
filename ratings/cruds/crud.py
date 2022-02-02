@@ -18,7 +18,6 @@ from dotenv import load_dotenv
 # Project
 from ratings.models import models
 from ratings.schemas import schemas
-import ratings.utils
 from ratings.utils.utils import Util
 
 
@@ -262,3 +261,36 @@ def create_applicant_evaluation(
             raise error
     else:
         raise HTTPException(status_code=404, detail="Company Not Found")
+
+
+def create_a_recruitment_process_evaluation(
+    db: Session,
+    request_body: schemas.RecruitmentProcessEvaluationCreate,
+    company_id: int,
+):
+    if get_applicant_by_id(db=db, id=request_body.applicant_id) != None:
+        try:
+            recruitment_process_evaluation = models.RecruitmentProcessEvaluation(
+                company_id=company_id,
+                applicant_id=request_body.applicant_id,
+                job_title=request_body.job_title,
+                improvement_content=request_body.improvement_content,
+                salary_evaluation_rating=request_body.salary_evaluation_rating.value,
+                allows_remote_work=request_body.allows_remote_work,
+                interview_response_time_rating=request_body.interview_response_time_rating.value,
+                job_description_rating=request_body.job_description_rating.value,
+                is_legally_company=request_body.is_legally_company,
+                amount_of_recruitment_time=request_body.amount_of_recruitment_time,
+                recruitment_process_period=request_body.recruitment_process_period.value,
+                created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            )
+            db.add(recruitment_process_evaluation)
+            db.commit()
+            db.refresh(recruitment_process_evaluation)
+
+            return recruitment_process_evaluation
+
+        except SQLAlchemyError as error:
+            raise error
+    else:
+        raise HTTPException(status_code=404, detail="Applicant Not found")

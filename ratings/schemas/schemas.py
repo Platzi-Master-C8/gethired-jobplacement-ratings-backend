@@ -227,3 +227,42 @@ class ApplicantEvaluationOut(ApplicantEvaluationBase):
 
     class Config:
         orm_mode = True
+
+
+class RecruitmentProcessEvaluationBase(BaseModel):
+    applicant_id: int = Field(
+        ..., gt=0, title="Company ID", description="Company ID", example=1
+    )
+    job_title: str = Field(
+        ..., min_length=3, max_length=70, example="Backend Developer", title="Job title"
+    )
+    improvement_content: str = Field(
+        ...,
+        min_length=100,
+        max_length=250,
+        example="I thought the company's interview process was fine, but I wish they would improve their response time due to less than 2 weeks.",
+        description="Improvement Content",
+    )
+    salary_evaluation_rating: enums.CompanySalaryRating = Field(..., example="Average")
+    allows_remote_work: int = Field(..., ge=0, le=1, example=1)
+    interview_response_time_rating: enums.CompanyRatingType = Field(
+        ..., example="Regular"
+    )
+    job_description_rating: enums.CompanyRatingType = Field(..., example="Good")
+    is_legally_company: int = Field(..., ge=0, le=1, example=0)
+    amount_of_recruitment_time: int = Field(..., gt=0, le=365, example=2)
+    recruitment_process_period: enums.SalaryFrequency = Field(..., example="Month")
+
+
+class RecruitmentProcessEvaluationCreate(RecruitmentProcessEvaluationBase):
+    pass
+
+
+class RecruitmentProcessEvaluationOut(RecruitmentProcessEvaluationBase):
+    created_at: Optional[datetime] = Field(
+        None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    id: int = Field(..., gt=0, example=1, title="Recruitment Process Evaluation ID")
+
+    class Config:
+        orm_mode = True

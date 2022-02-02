@@ -135,7 +135,7 @@ CREATE TABLE recruitment_process_evaluations(
     PRIMARY KEY (id),
     FOREIGN KEY (applicant_id) REFERENCES applicants(id),
     CONSTRAINT allows_remote_work_check CHECK (allows_remote_work = ANY (ARRAY[1,0])),
-    CONSTRAINT is_legally_company_check CHECK (is_legally_company = ANY (ARRAY[1,2])),
+    CONSTRAINT is_legally_company_check CHECK (is_legally_company = ANY (ARRAY[1,0])),
     CONSTRAINT salary_evaluation_rating_check CHECK (salary_evaluation_rating = ANY (ARRAY['High','Average','Low'])),
     CONSTRAINT interview_response_time_rating_check CHECK (interview_response_time_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
     CONSTRAINT job_description_rating_check CHECK (job_description_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
