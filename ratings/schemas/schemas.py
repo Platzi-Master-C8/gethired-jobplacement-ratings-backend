@@ -157,3 +157,73 @@ class ApplicantOut(ApplicantBase):
 
     class Config:
         orm_mode = True
+
+
+class ApplicantEvaluationBase(BaseModel):
+    company_id: int = Field(
+        ..., gt=0, title="Company ID", description="Company ID", example=1
+    )
+    applicant_name: str = Field(
+        ...,
+        max_length=50,
+        example="Mariana Rodriguez Herrera",
+        title="Applicant Name",
+        description="Applicant Name",
+    )
+    is_hired: int = Field(
+        ..., gt=0, le=1, example=1, title="Is Hired", description="Is Hired"
+    )
+    communication_rating: int = Field(
+        ...,
+        gt=0,
+        le=5,
+        example=5,
+        title="Communication Ratings",
+        description="Communication Ratings",
+    )
+    confidence_rating: int = Field(
+        ...,
+        gt=0,
+        le=5,
+        example=3,
+        title="Confidence Rating",
+        description="Confidence Rating",
+    )
+    negotiation_rating: int = Field(
+        ...,
+        gt=0,
+        le=5,
+        example=4,
+        title="Negotiation Rating",
+        description="Negotiation Rating",
+    )
+    motivation_rating: int = Field(
+        ..., gt=0, le=5, example=5, title="Motivation Rating", description=""
+    )
+    self_knowledge_rating: int = Field(
+        ...,
+        gt=0,
+        le=5,
+        example=5,
+        title="Self Knowledge Rating",
+        description="Self Knowledge Rating",
+    )
+    hard_skill_rating: int = Field(
+        ...,
+        gt=0,
+        le=5,
+        example=4,
+        title="Hard Skill Ratings",
+        description="Hard Skill Ratings",
+    )
+
+
+class ApplicantEvaluationCreate(ApplicantEvaluationBase):
+    pass
+
+
+class ApplicantEvaluationOut(ApplicantEvaluationBase):
+    id: int = Field(..., gt=0, example=1, title="Applicant Evaluation ID")
+
+    class Config:
+        orm_mode = True

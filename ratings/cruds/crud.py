@@ -231,3 +231,34 @@ def create_applicant(
         raise Error
 
     return applicant
+
+
+def create_applicant_evaluation(
+    db: Session,
+    applicant_evaluation_body: schemas.ApplicantEvaluationCreate,
+    applicant_id: int,
+):
+
+    if check_company_id_exist(company_id=applicant_evaluation_body.company_id) != -1:
+        try:
+            applicant_evaluation = models.ApplicantEvaluation(
+                company_id=applicant_evaluation_body.company_id,
+                applicant_id=applicant_id,
+                applicant_name=applicant_evaluation_body.applicant_name,
+                is_hired=applicant_evaluation_body.is_hired,
+                communication_rating=applicant_evaluation_body.communication_rating,
+                confidence_rating=applicant_evaluation_body.confidence_rating,
+                negotiation_rating=applicant_evaluation_body.negotiation_rating,
+                motivation_rating=applicant_evaluation_body.motivation_rating,
+                self_knowledge_rating=applicant_evaluation_body.self_knowledge_rating,
+                hard_skill_rating=applicant_evaluation_body.hard_skill_rating,
+            )
+            db.add(applicant_evaluation)
+            db.commit()
+            db.refresh(applicant_evaluation)
+
+            return applicant_evaluation
+        except SQLAlchemyError as error:
+            raise error
+    else:
+        raise HTTPException(status_code=404, detail="Company Not Found")

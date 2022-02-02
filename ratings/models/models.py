@@ -10,7 +10,6 @@ from ratings.config.database import Base
 
 
 class CompanyEvaluation(Base):
-    """Company Evaluation."""
 
     __tablename__ = "company_evaluations"
 
@@ -45,7 +44,6 @@ class CompanyEvaluation(Base):
 
 
 class ReportingReasonType(Base):
-    """Reporting Reason Type."""
 
     __tablename__ = "reporting_reason_types"
 
@@ -58,7 +56,6 @@ class ReportingReasonType(Base):
 
 
 class Complaint(Base):
-    """Complaints."""
 
     __tablename__ = "complaints"
 
@@ -73,7 +70,6 @@ class Complaint(Base):
 
 
 class CompanyEvaluationComplaint(Base):
-    """Table pivot between Company Evaluation and Complaints."""
 
     __tablename__ = "company_evaluation_complaint"
 
@@ -83,7 +79,6 @@ class CompanyEvaluationComplaint(Base):
 
 
 class Applicant(Base):
-    """ "Applicants"""
 
     __tablename__ = "applicants"
 
@@ -99,3 +94,27 @@ class Applicant(Base):
     cv_url = Column(String(150), nullable=False)
     motivation_letter_url = Column(String(150), nullable=False)
     created_at = Column(DateTime, server_default=func.now())
+
+    applicant_evaluations = relationship(
+        "ApplicantEvaluation", back_populates="applicant"
+    )
+
+
+class ApplicantEvaluation(Base):
+
+    __tablename__ = "applicant_evaluations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, nullable=False)
+    applicant_name = Column(String(50), nullable=False)
+    is_hired = Column(Integer, nullable=False)
+    communication_rating = Column(Integer, nullable=False)
+    confidence_rating = Column(Integer, nullable=False)
+    negotiation_rating = Column(Integer, nullable=False)
+    motivation_rating = Column(Integer, nullable=False)
+    self_knowledge_rating = Column(Integer, nullable=False)
+    hard_skill_rating = Column(Integer, nullable=False)
+    applicant_id = Column(Integer, ForeignKey("applicants.id"))
+    created_at = Column(DateTime, server_default=func.now())
+
+    applicant = relationship("Applicant", back_populates="applicant_evaluations")
