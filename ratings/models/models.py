@@ -99,6 +99,10 @@ class Applicant(Base):
         "ApplicantEvaluation", back_populates="applicant"
     )
 
+    recruitment_process_evaluations = relationship(
+        "RecruitmentProcessEvaluation", back_populates="applicant"
+    )
+
 
 class ApplicantEvaluation(Base):
 
@@ -118,3 +122,26 @@ class ApplicantEvaluation(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     applicant = relationship("Applicant", back_populates="applicant_evaluations")
+
+
+class RecruitmentProcessEvaluation(Base):
+
+    __tablename__ = "recruitment_process_evaluations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, nullable=False)
+    applicant_id = Column(Integer, ForeignKey("applicants.id"))
+    job_title = Column(String(70), nullable=False)
+    improvement_content = Column(String(250), nullable=False)
+    salary_evaluation_rating = Column(String(15), nullable=False)
+    allows_remote_work = Column(Integer, nullable=False)
+    interview_response_time_rating = Column(String(15), nullable=False)
+    job_description_rating = Column(String(15), nullable=False)
+    is_legally_company = Column(Integer, nullable=False)
+    amount_of_recruitment_time = Column(Integer, nullable=False)
+    recruitment_process_period = Column(String(15), nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    applicant = relationship(
+        "Applicant", back_populates="recruitment_process_evaluations"
+    )

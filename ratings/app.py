@@ -351,10 +351,22 @@ def create_applicant_evaluation(
 
 @app.post(
     path="/api/v1/companies/{id}/recruitment-process-evaluation",
+    status_code=status.HTTP_201_CREATED,
+    response_model=schemas.RecruitmentProcessEvaluationOut,
     tags=["Applicants"],
+    summary="Create a Recruitment Process Evaluation to a company",
 )
-def create_recruitment_process_evaluation():
-    pass
+def create_recruitment_process_evaluation(
+    session_local_db: Session = Depends(get_database_session),
+    request_body: schemas.RecruitmentProcessEvaluationCreate = Body(...),
+    id: int = Path(..., gt=0, title="Company ID", description="Company ID"),
+):
+    if crud.check_company_id_exist(company_id=id) == -1:
+        raise HTTPException(status_code=404, detail="Company Not found")
+
+    return crud.create_a_recruitment_process_evaluation(
+        db=session_local_db, request_body=request_body, company_id=id
+    )
 
 
 @app.get(
