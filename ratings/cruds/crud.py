@@ -3,13 +3,16 @@ import os
 import random
 
 # Typing
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # Third-party libraries
 from fastapi import HTTPException
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.future import select
+from sqlalchemy import asc, desc
+from sqlalchemy import or_
 import requests
 
 # Dotenv
@@ -18,6 +21,7 @@ from dotenv import load_dotenv
 # Project
 from ratings.models import models
 from ratings.schemas import schemas
+from ratings.utils import enums
 from ratings.utils.utils import Util
 
 
@@ -62,22 +66,53 @@ def get_applicant_by_id(db: Session, id: int):
     return db.query(models.Applicant).filter(models.Applicant.id == id).first()
 
 
-def get_company_evaluations_by_company_id(db: Session, company_id: int):
-    if check_company_id_exist(company_id) != -1:
+def get_company_evaluations_by_company_id(
+    db: Session,
+    company_id: int,
+    job_title: Optional[str],
+    content_type: Optional[str],
+    job_location: Optional[str],
+    helpfulness: Optional[str],
+    rating: Optional[str],
+    date: Optional[str],
+):
+    try:
+        query = db.query(models.CompanyEvaluation)
 
-        try:
-            list_of_company_evaluations = (
-                db.query(models.CompanyEvaluation)
-                .filter(models.CompanyEvaluation.company_id == company_id)
-                .all()
+        if company_id:
+            query = query.filter(company_id == company_id)
+
+        if job_title:
+            query = query.filter(
+                or_(models.CompanyEvaluation.job_title.ilike(f"%{job_title}%"))
             )
 
-            return list_of_company_evaluations
+        if content_type:
+            query = query.filter(
+                models.CompanyEvaluation.content_type.ilike(f"%{content_type}%")
+            )
 
-        except SQLAlchemyError as error:
-            raise error
-    else:
-        raise HTTPException(status_code=404, detail="Company Not Found")
+        if job_location:
+            query = query.filter(
+                or_(models.CompanyEvaluation.job_location.ilike(f"%{job_location}%"))
+            )
+
+        if helpfulness == "DESC":
+            query = query.order_by(models.CompanyEvaluation.utility_counter.desc())
+
+        if helpfulness == "ASC":
+            query = query.order_by(models.CompanyEvaluation.utility_counter.asc())
+
+        if date == "DESC":
+            query = query.order_by(desc(models.CompanyEvaluation.created_at))
+
+        if date == "ASC":
+            query = query.order_by(asc(models.CompanyEvaluation.created_at))
+
+        return query.order_by(models.CompanyEvaluation.id.desc()).all()
+
+    except SQLAlchemyError as error:
+        raise error
 
 
 def create_company_evaluation(
