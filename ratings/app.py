@@ -277,15 +277,15 @@ def get_reporting_reason_types(
     summary="Register an Applicant who applies to a vacancy.",
 )
 def register_applicants(
-    name: str = Form(..., max_length=40,title="Applicant Name"),
+    name: str = Form(..., max_length=40, title="Applicant Name"),
     paternal_last_name: str = Form(..., max_length=40),
     maternal_last_name: str = Form(..., max_length=40),
-    email: str = Form(...,max_length=70,title="Email"),
+    email: str = Form(..., max_length=70, title="Email"),
     address: str = Form(default=None, max_length=150, title="Address"),
     cellphone: int = Form(...),
-    linkedln_url: str = Form(default=None,max_length=150),
-    cv_file: UploadFile = File(...,title="CV File"),
-    motivation_letter_file: UploadFile = File(default=None,title="Motivation Letter"),
+    linkedln_url: str = Form(default=None, max_length=150),
+    cv_file: UploadFile = File(..., title="CV File"),
+    motivation_letter_file: UploadFile = File(default=None, title="Motivation Letter"),
     session_local_db: Session = Depends(get_database_session),
 ):
     # Save the cv files
@@ -296,16 +296,15 @@ def register_applicants(
         with open(file_location_cv, "wb+") as file_object:
             file_object.write(cv_file.file.read())
 
-
     # Save the motivation letter
     if not motivation_letter_file:
         file_location_motivation_letter = None
-        
+
     elif motivation_letter_file.content_type not in ["application/pdf"]:
         raise HTTPException(400, detail="Invalid document type")
-    
+
     else:
-        file_location_motivation_letter = ( f"ratings/files/ml_{int(time.time())}.pdf")
+        file_location_motivation_letter = f"ratings/files/ml_{int(time.time())}.pdf"
         with open(file_location_motivation_letter, "wb+") as file_object:
             file_object.write(motivation_letter_file.file.read())
 
@@ -326,10 +325,28 @@ def register_applicants(
 @app.post(
     path="/api/v1/applicants/{id}/applicant-evaluation",
     tags=["Applicants"],
+    response_model=schemas.ApplicantEvaluationOut,
     status_code=status.HTTP_201_CREATED,
+    summary="Create an Applicant Evaluation",
 )
-def create_applicant_evaluation():
-    pass
+def create_applicant_evaluation(
+    session_local_db: Session = Depends(get_database_session),
+    applicant_evaluation_body: schemas.ApplicantEvaluationCreate = Body(...),
+    id: int = Path(
+        ...,
+        gt=0,
+        title="Applicant ID",
+        description="Applicant ID",
+    ),
+):
+    if crud.get_applicant_by_id(db=session_local_db, id=id) is None:
+        raise HTTPException(status_code=404, detail="Applicant Not Found")
+
+    return crud.create_applicant_evaluation(
+        db=session_local_db,
+        applicant_evaluation_body=applicant_evaluation_body,
+        applicant_id=id,
+    )
 
 
 @app.post(
