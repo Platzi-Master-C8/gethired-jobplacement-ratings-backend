@@ -1,6 +1,12 @@
 from enum import Enum
 
 
+class CompanySalaryRating(Enum):
+    high = "High"
+    average = "Average"
+    low = "Low"
+
+
 class CompanyRatingType(Enum):
     good = "Good"
     regular = "Regular"
@@ -18,5 +24,6 @@ class CurrencyCodeISO4217(Enum):
 class SalaryFrequency(Enum):
     hour = "Hour"
     day = "Day"
+    week = "Week"
     month = "Month"
     year = "Year"
