@@ -20,8 +20,6 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 from fastapi.responses import JSONResponse
-from sqlalchemy import null
-
 
 # SQLAlchemy
 from sqlalchemy.orm import Session
@@ -84,16 +82,34 @@ def get_general_ratings():
 def get_company_evaluations_by_company_id(
     session_local_db: Session = Depends(get_database_session),
     id: int = Path(..., gt=0, title="Company ID", example=1, description="Company ID"),
+    job_title: Optional[str] = Query(None, min_length=3, max_length=70),
+    content_type: Optional[str] = Query(None, max_length=280),
+    job_location: Optional[str] = Query(None, max_length=70),
+    helpfulness: Optional[str] = Query(default=None, min_length=3, max_length=4),
+    rating: Optional[str] = Query(default=None, min_length=3, max_length=4),
+    date: Optional[str] = Query(default=None, min_length=3, max_length=4),
 ):
-
-    company_evaluations = crud.get_company_evaluations_by_company_id(
-        session_local_db, company_id=id
-    )
-    if len(company_evaluations) == 0:
-        return JSONResponse(
-            status_code=200,
-            content={"message": "No evaluations have been added to this company yet"},
+    if crud.check_company_id_exist(id) != -1:
+        company_evaluations = crud.get_company_evaluations_by_company_id(
+            session_local_db,
+            company_id=id,
+            job_title=job_title,
+            content_type=content_type,
+            job_location=job_location,
+            helpfulness=helpfulness,
+            rating=rating,
+            date=date,
         )
+
+        if len(company_evaluations) == 0:
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "message": "No evaluations have been added to this company yet"
+                },
+            )
+    else:
+        raise HTTPException(status_code=404, detail="Company Not Found")
 
     return paginate(company_evaluations)
 
@@ -112,7 +128,7 @@ add_pagination(app)
 def create_company_evaluation(
     company_evaluation: schemas.CompanyEvaluationCreate = Body(...),
     session_local_db: Session = Depends(get_database_session),
-    id: int = Path(..., gt=0, title="Company ID", description="Company ID"),
+    id: int = Path(..., gt=0, example=1, title="Company ID", description="Company ID"),
 ):
     """
     This Path Operation create a company evaluation.
