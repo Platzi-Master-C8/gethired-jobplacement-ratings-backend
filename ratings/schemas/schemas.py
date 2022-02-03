@@ -56,6 +56,9 @@ class CompanyEvaluationOut(CompanyEvaluationBase):
     created_at: Optional[datetime] = Field(
         None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
+    updated_at: Optional[datetime] = Field(
+        None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
     company_id: int = Field(
         ...,
         gt=0,

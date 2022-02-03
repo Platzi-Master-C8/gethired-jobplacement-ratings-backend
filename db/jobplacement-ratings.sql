@@ -30,6 +30,7 @@ CREATE TABLE company_evaluations
     utility_counter BIGINT,
     non_utility_counter BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id),
     CONSTRAINT career_development_rating_check CHECK (career_development_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
     CONSTRAINT diversity_equal_opportunity_rating_check CHECK (diversity_equal_opportunity_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),

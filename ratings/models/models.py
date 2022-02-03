@@ -35,6 +35,7 @@ class CompanyEvaluation(Base):
     utility_counter = Column(Integer, default=0)
     non_utility_counter = Column(Integer, default=0)
     created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now())
 
     # Relationships
     complaints = relationship(
