@@ -36,7 +36,7 @@ CREATE TABLE company_evaluations
     CONSTRAINT working_environment_rating_check CHECK (working_environment_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
     CONSTRAINT currency_type_check CHECK (currency_type = ANY (ARRAY['MXN', 'COP', 'CLP', 'USD', 'EUR'])),
     CONSTRAINT salary_rating_check CHECK (salary_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
-    CONSTRAINT salary_frequency_check CHECK (salary_frequency= ANY (ARRAY['Hour', 'Day',"Week",'Month', 'Year'])),
+    CONSTRAINT salary_frequency_check CHECK (salary_frequency= ANY (ARRAY['Hour', 'Day','Week','Month', 'Year'])),
     CONSTRAINT is_still_working_here_check CHECK (is_still_working_here = ANY (ARRAY[1, 0])),
     CONSTRAINT recommended_a_friend_check CHECK (recommended_a_friend = ANY (ARRAY[1, 0])),
     CONSTRAINT allows_remote_work_check CHECK (allows_remote_work = ANY (ARRAY[1, 0])),
