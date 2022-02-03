@@ -65,8 +65,17 @@ def get_database_session():
     status_code=status.HTTP_200_OK,
     summary="Get the general ratings from a company",
 )
-def get_general_ratings():
-    pass
+def get_general_ratings(id: int = Path(..., gt=0, example=1, title="Company ID")):
+
+    return {
+        "company_id": id,
+        "company_rating": 4.5,
+        "total_reviews": 500,
+        "gral_career_development_rating": 4.5,
+        "gral_diversity_equal_opportunity_rating": 4,
+        "gral_working_environment_rating": 5,
+        "gral_salary_rating": 4,
+    }
 
 
 # Company Evaluations Path Operations
