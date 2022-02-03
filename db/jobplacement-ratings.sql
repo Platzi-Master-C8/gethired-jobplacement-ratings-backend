@@ -139,7 +139,7 @@ CREATE TABLE recruitment_process_evaluations(
     CONSTRAINT salary_evaluation_rating_check CHECK (salary_evaluation_rating = ANY (ARRAY['High','Average','Low'])),
     CONSTRAINT interview_response_time_rating_check CHECK (interview_response_time_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
     CONSTRAINT job_description_rating_check CHECK (job_description_rating = ANY (ARRAY['Good', 'Regular', 'Bad'])),
-    CONSTRAINT recruitment_process_period_check CHECK (recruitment_process_period = ANY (ARRAY['Hour', 'Day', 'Week','Month','Year']))
+    CONSTRAINT recruitment_process_period_check CHECK (recruitment_process_period = ANY (ARRAY['Hour', 'Day','Week','Month','Year']))
 );
 
 

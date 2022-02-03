@@ -299,7 +299,11 @@ def register_applicants(
     email: str = Form(..., max_length=70, title="Email"),
     address: str = Form(default=None, max_length=150, title="Address"),
     cellphone: int = Form(...),
-    linkedln_url: str = Form(example="https://www.linkedin.com/in/javieramayapat/",default=None, max_length=150),
+    linkedln_url: str = Form(
+        example="https://www.linkedin.com/in/javieramayapat/",
+        default=None,
+        max_length=150,
+    ),
     cv_file: UploadFile = File(..., title="CV File"),
     motivation_letter_file: UploadFile = File(default=None, title="Motivation Letter"),
     session_local_db: Session = Depends(get_database_session),
@@ -310,7 +314,7 @@ def register_applicants(
         raise HTTPException(400, detail="Invalid document type")
     else:
         file_location_cv = f"/doc/cv_{int(time.time())}.pdf"
-        with open(ROOT_DIR+file_location_cv, "wb+") as file_object:
+        with open(ROOT_DIR + file_location_cv, "wb+") as file_object:
             file_object.write(cv_file.file.read())
 
     # Save the motivation letter

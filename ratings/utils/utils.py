@@ -3,7 +3,6 @@ from typing import List
 
 
 class Util:
-    
     def create_tracking_code() -> str:
         MAYUS = [
             "A",
