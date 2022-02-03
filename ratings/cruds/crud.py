@@ -150,6 +150,7 @@ def create_company_evaluation(
                 allows_remote_work=company_evaluation.allows_remote_work,
                 is_legally_company=company_evaluation.is_legally_company,
                 created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             )
             db.add(company_evaluation)
             db.commit()
@@ -164,24 +165,34 @@ def create_company_evaluation(
 
 
 def increse_evaluation_utility_rating(db: Session, company_evaluation_id: int) -> Dict:
-
-    company_evaluation = get_company_evaluation_by_id(db=db, id=company_evaluation_id)
-    company_evaluation.utility_counter += 1
-    db.add(company_evaluation)
-    db.commit()
-    return company_evaluation
+    try:
+        company_evaluation = get_company_evaluation_by_id(
+            db=db, id=company_evaluation_id
+        )
+        company_evaluation.utility_counter += 1
+        company_evaluation.updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        db.add(company_evaluation)
+        db.commit()
+        return company_evaluation
+    except SQLAlchemyError as error:
+        raise error
 
 
 def increase_evaluation_non_utility_rating(
     db: Session, company_evaluation_id: int
 ) -> Dict:
 
-    company_evaluation = get_company_evaluation_by_id(db=db, id=company_evaluation_id)
-    company_evaluation.non_utility_counter += 1
-    db.add(company_evaluation)
-    db.commit()
-
-    return company_evaluation
+    try:
+        company_evaluation = get_company_evaluation_by_id(
+            db=db, id=company_evaluation_id
+        )
+        company_evaluation.non_utility_counter += 1
+        company_evaluation.updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        db.add(company_evaluation)
+        db.commit()
+        return company_evaluation
+    except SQLAlchemyError as error:
+        raise error
 
 
 def get_all_reporting_reason_types(db: Session) -> List[Dict]:
