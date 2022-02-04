@@ -10,7 +10,6 @@ from fastapi import HTTPException
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.future import select
 from sqlalchemy import asc, desc
 from sqlalchemy import or_
 import requests
@@ -27,6 +26,7 @@ from ratings.utils.utils import Util
 
 load_dotenv()
 COMPANIES_ENDPOINT = os.getenv("COMPANIES_ENDPOINT")
+VACANCIES_ENDPOINT = os.getenv("VACANCIES_ENDPOINT")
 
 
 def check_company_id_exist(company_id: int) -> int:
@@ -48,6 +48,31 @@ def check_company_id_exist(company_id: int) -> int:
 
     try:
         company_id = list_of_company_ids.index(company_id)
+    except:
+        company_id = -1
+
+    return company_id
+
+
+def check_vacancy_id_exist(vacancy_id: int) -> int:
+    """Function to check if a vacancy id exists
+
+    Args:
+        vacancy (int): ID of the compnay to insert a company evaluation
+
+    Returns:
+        if vacancy_id exist in the registers of companies
+            return int: The company id
+        else vacancy_is not exist
+            return int: -1 to indicate non-existence
+    """
+
+    r = requests.get(VACANCIES_ENDPOINT)
+    vacancies_response = r.json()["data"]
+    list_of_company_ids = [vacancy["id"] for vacancy in vacancies_response]
+
+    try:
+        company_id = list_of_company_ids.index(vacancy_id)
     except:
         company_id = -1
 
@@ -207,6 +232,13 @@ def get_reporting_reason_by_id(db: Session, reporting_reason_type_id: int) -> Di
     )
 
 
+def get_all_postulations_status(db: Session):
+    try:
+        return db.query(models.PostulationStatus).all()
+    except SQLAlchemyError as error:
+        raise error
+
+
 def create_complaint(
     db: Session, complaint_body: schemas.ComplaintCreate, company_evaluation_id: int
 ) -> dict:
@@ -245,6 +277,7 @@ def create_complaint(
 
 def create_applicant(
     db: Session,
+    vacancy_id: int,
     name: str,
     paternal_last_name: str,
     maternal_last_name: str,
@@ -257,6 +290,8 @@ def create_applicant(
 ):
     try:
         applicant = models.Applicant(
+            vacancy_id=vacancy_id,
+            postulation_status_id=1,
             name=name.capitalize().strip(),
             paternal_last_name=paternal_last_name.capitalize().strip(),
             maternal_last_name=maternal_last_name.capitalize().strip(),
@@ -267,6 +302,8 @@ def create_applicant(
             linkedln_url=linkedln_url,
             cv_url=cv_url,
             motivation_letter_url=motivation_letter_url,
+            created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         )
         db.add(applicant)
         db.commit()

@@ -4,6 +4,7 @@
 from sqlalchemy import Column, Integer, String, DECIMAL, Date, ForeignKey, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref
 
 # Project
 from ratings.config.database import Base
@@ -79,11 +80,23 @@ class CompanyEvaluationComplaint(Base):
     complaint_id = Column(Integer, ForeignKey("complaints.id"))
 
 
+class PostulationStatus(Base):
+
+    __tablename__ = "postulation_status"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(70), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now())
+
+
 class Applicant(Base):
 
     __tablename__ = "applicants"
 
     id = Column(Integer, primary_key=True, index=True)
+    vacancy_id = Column(Integer, index=True)
+    postulation_status_id = Column(Integer, ForeignKey("postulation_status.id"))
     name = Column(String(40), nullable=False)
     paternal_last_name = Column(String(40), nullable=False)
     maternal_last_name = Column(String(40), nullable=False)
@@ -94,6 +107,7 @@ class Applicant(Base):
     linkedln_url = Column(String(2083), nullable=True)
     cv_url = Column(String(150), nullable=False)
     motivation_letter_url = Column(String(150), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now())
     created_at = Column(DateTime, server_default=func.now())
 
     applicant_evaluations = relationship(
@@ -102,6 +116,10 @@ class Applicant(Base):
 
     recruitment_process_evaluations = relationship(
         "RecruitmentProcessEvaluation", back_populates="applicant"
+    )
+
+    postulation_status = relationship(
+        "PostulationStatus", backref=backref("applicants", uselist=False)
     )
 
 

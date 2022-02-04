@@ -123,6 +123,7 @@ class ComplaintOut(ComplaintBase):
 
 
 class ApplicantBase(BaseModel):
+    vacancy_id: int = Field(..., gt=0, title="Vacancy ID", example=1)
     name: str = Field(
         ..., max_length=40, description="Applicant Name", example="Javier"
     )
@@ -156,6 +157,12 @@ class ApplicantOut(ApplicantBase):
     motivation_letter_url: str = Field(default=None)
     tracking_code: str = Field(
         ..., max_length=8, title="Tracking Code", example="ADER543J"
+    )
+    created_at: Optional[datetime] = Field(
+        None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    updated_at: Optional[datetime] = Field(
+        None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     id: int = Field(..., gt=0, title="Applicant ID", example=1)
 
@@ -267,6 +274,29 @@ class RecruitmentProcessEvaluationOut(RecruitmentProcessEvaluationBase):
         None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     id: int = Field(..., gt=0, example=1, title="Recruitment Process Evaluation ID")
+
+    class Config:
+        orm_mode = True
+
+
+class PostulationStatusBase(BaseModel):
+    name: str = Field(..., example="Applied", title="Applied", max_length=70)
+
+
+class PostulationStatusCreate(PostulationStatusBase):
+    pass
+
+
+class PostulationStatusOut(PostulationStatusBase):
+
+    created_at: Optional[datetime] = Field(
+        default=None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    name: str = Field(..., example="Applied", title="Applied", max_length=70)
+    id: int = Field(..., gt=0, title="Applicant Status ID", example=1)
 
     class Config:
         orm_mode = True
