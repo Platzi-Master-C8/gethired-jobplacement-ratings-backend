@@ -371,7 +371,6 @@ def create_applicant_evaluation(
     id: int = Path(
         ...,
         ge=0,
-        le=1,
         title="Applicant ID",
         description="Applicant ID",
     ),
