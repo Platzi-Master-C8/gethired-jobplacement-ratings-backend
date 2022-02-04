@@ -47,8 +47,17 @@ CREATE TABLE company_evaluations
 ALTER TABLE IF EXISTS company_evaluations
     OWNER to postgres;
 
+CREATE TABLE postulation_status(
+    id bigserial NOT NULL,
+    name VARCHAR(70) NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
+    PRIMARY KEY (id)
+);
 CREATE TABLE applicants (
     id bigserial NOT NULL,
+    vacancy_id bigserial NOT NULL,
+    postulation_status_id BIGINT NOT NULL,
     name VARCHAR(40) NOT NULL,
     paternal_last_name VARCHAR(40) NOT NULL,
     maternal_last_name VARCHAR(40),
@@ -59,8 +68,10 @@ CREATE TABLE applicants (
     linkedln_url VARCHAR(150),
     cv_url VARCHAR(150) NOT NULL,
     motivation_letter_url VARCHAR(150),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY (id),
+    FOREIGN KEY (postulation_status_id) REFERENCES postulation_status(id),
     CONSTRAINT tracking_code_unique UNIQUE (tracking_code)
 );
 
@@ -77,6 +88,7 @@ CREATE TABLE complaints(
     reporting_reason_type_id BIGINT NOT NULL,
     problem_description VARCHAR(70) NOT NULL,
     email VARCHAR(70) NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP,
     PRIMARY KEY(id),
     FOREIGN KEY (reporting_reason_type_id) REFERENCES reporting_reason_types(id)
@@ -143,6 +155,11 @@ CREATE TABLE recruitment_process_evaluations(
     CONSTRAINT recruitment_process_period_check CHECK (recruitment_process_period = ANY (ARRAY['Hour', 'Day','Week','Month','Year']))
 );
 
+
+INSERT INTO postulation_status(name) VALUES ('Applied');
+INSERT INTO postulation_status(name) VALUES ('Interviews');
+INSERT INTO postulation_status(name) VALUES ('Accepted');
+INSERT INTO postulation_status(name) VALUES ('Rejected');
 
 
 INSERT INTO reporting_reason_types(name) VALUES ('Suspicious, spam or fake');

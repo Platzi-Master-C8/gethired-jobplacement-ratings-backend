@@ -302,6 +302,7 @@ def get_reporting_reason_types(
     summary="Register an Applicant who applies to a vacancy.",
 )
 def register_applicants(
+    vacancy_id: int = Form(..., gt=0, title="Vacancy ID", description="Vacancy ID"),
     name: str = Form(..., max_length=40, title="Applicant Name"),
     paternal_last_name: str = Form(..., max_length=40),
     maternal_last_name: str = Form(..., max_length=40),
@@ -317,39 +318,44 @@ def register_applicants(
     motivation_letter_file: UploadFile = File(default=None, title="Motivation Letter"),
     session_local_db: Session = Depends(get_database_session),
 ):
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    # Save the cv files
-    if cv_file.content_type not in ["application/pdf"]:
-        raise HTTPException(400, detail="Invalid document type")
+    if crud.check_vacancy_id_exist(vacancy_id=vacancy_id) != -1:
+
+        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+        # Save the cv files
+        if cv_file.content_type not in ["application/pdf"]:
+            raise HTTPException(400, detail="Invalid document type")
+        else:
+            file_location_cv = f"/doc/cv_{int(time.time())}.pdf"
+            with open(ROOT_DIR + file_location_cv, "wb+") as file_object:
+                file_object.write(cv_file.file.read())
+
+        # Save the motivation letter
+        if not motivation_letter_file:
+            file_location_motivation_letter = None
+
+        elif motivation_letter_file.content_type not in ["application/pdf"]:
+            raise HTTPException(400, detail="Invalid document type")
+
+        else:
+            file_location_motivation_letter = f"/doc/ml_{int(time.time())}.pdf"
+            with open(file_location_motivation_letter, "wb+") as file_object:
+                file_object.write(motivation_letter_file.file.read())
+
+        return crud.create_applicant(
+            db=session_local_db,
+            vacancy_id=vacancy_id,
+            name=name,
+            paternal_last_name=paternal_last_name,
+            maternal_last_name=maternal_last_name,
+            email=email,
+            address=address,
+            cellphone=cellphone,
+            linkedln_url=linkedln_url,
+            cv_url=file_location_cv,
+            motivation_letter_url=file_location_motivation_letter,
+        )
     else:
-        file_location_cv = f"/doc/cv_{int(time.time())}.pdf"
-        with open(ROOT_DIR + file_location_cv, "wb+") as file_object:
-            file_object.write(cv_file.file.read())
-
-    # Save the motivation letter
-    if not motivation_letter_file:
-        file_location_motivation_letter = None
-
-    elif motivation_letter_file.content_type not in ["application/pdf"]:
-        raise HTTPException(400, detail="Invalid document type")
-
-    else:
-        file_location_motivation_letter = f"/doc/ml_{int(time.time())}.pdf"
-        with open(file_location_motivation_letter, "wb+") as file_object:
-            file_object.write(motivation_letter_file.file.read())
-
-    return crud.create_applicant(
-        db=session_local_db,
-        name=name,
-        paternal_last_name=paternal_last_name,
-        maternal_last_name=maternal_last_name,
-        email=email,
-        address=address,
-        cellphone=cellphone,
-        linkedln_url=linkedln_url,
-        cv_url=file_location_cv,
-        motivation_letter_url=file_location_motivation_letter,
-    )
+        raise HTTPException(status_code=404, detail="Vacancy Not Found")
 
 
 @app.post(
@@ -364,7 +370,8 @@ def create_applicant_evaluation(
     applicant_evaluation_body: schemas.ApplicantEvaluationCreate = Body(...),
     id: int = Path(
         ...,
-        gt=0,
+        ge=0,
+        le=1,
         title="Applicant ID",
         description="Applicant ID",
     ),
@@ -406,3 +413,26 @@ def create_recruitment_process_evaluation(
 )
 def get_applicant_review_resolution():
     pass
+
+
+@app.get(
+    path="/api/v1/postulation-status",
+    status_code=status.HTTP_200_OK,
+    response_model=List[schemas.PostulationStatusOut],
+    tags=["Postulation status"],
+    summary="Get a List of Postulation Status",
+)
+def get_postulation_status_list(
+    session_local_db: Session = Depends(get_database_session),
+):
+
+    postulation_list = crud.get_all_postulations_status(db=session_local_db)
+    if len(postulation_list) == 0:
+        return JSONResponse(
+            status_code=200,
+            content={
+                "message": "No evaluations have been added to this company yet",
+                "data": [],
+            },
+        )
+    return postulation_list
