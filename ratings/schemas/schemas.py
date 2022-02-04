@@ -182,7 +182,7 @@ class ApplicantEvaluationBase(BaseModel):
         description="Applicant Name",
     )
     is_hired: int = Field(
-        ..., gt=0, le=1, example=1, title="Is Hired", description="Is Hired"
+        ..., ge=0, le=1, example=1, title="Is Hired", description="Is Hired"
     )
     communication_rating: int = Field(
         ...,
