@@ -410,8 +410,28 @@ def create_recruitment_process_evaluation(
     tags=["Applicants"],
     status_code=status.HTTP_200_OK,
 )
-def get_applicant_review_resolution():
-    pass
+def get_application_process(
+    session_local_db: Session = Depends(get_database_session),
+    tracking_code: str = Path(
+        ..., max_length=8, title="Tracking Code", description="Tracking Code"
+    ),
+    paternal_last_name: str = Path(
+        ..., max_length=70, title="Paternal Last Name", description="Paternal Last Name"
+    ),
+):
+
+    applicant_process = crud.get_application_process(
+        db=session_local_db,
+        tracking_code=tracking_code,
+        paternal_last_name=paternal_last_name,
+    )
+    if applicant_process is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Process Application Not Found, Please check your information",
+        )
+
+    return applicant_process
 
 
 @app.get(

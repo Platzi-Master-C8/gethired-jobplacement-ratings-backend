@@ -1,17 +1,19 @@
 # Python
 import os
-import random
+
 
 # Typing
 from typing import Dict, List, Optional
 
 # Third-party libraries
 from fastapi import HTTPException
+from fastapi.responses import FileResponse
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import asc, desc
 from sqlalchemy import or_
+from sqlalchemy import and_
 import requests
 
 # Dotenv
@@ -77,6 +79,18 @@ def check_vacancy_id_exist(vacancy_id: int) -> int:
         company_id = -1
 
     return company_id
+
+
+def get_vacancy_by_id(vacancy_id: int) -> dict:
+
+    r = requests.get(VACANCIES_ENDPOINT)
+    vacancies_response = r.json()["data"]
+    vacancy = [vacancy for vacancy in vacancies_response if vacancy["id"] == vacancy_id]
+
+    if vacancy == []:
+        raise HTTPException(status_code=404, detail="Vacancy Not Found")
+
+    return vacancy[0]
 
 
 def get_company_evaluation_by_id(db: Session, id: int):
@@ -377,3 +391,64 @@ def create_a_recruitment_process_evaluation(
             raise error
     else:
         raise HTTPException(status_code=404, detail="Applicant Not found")
+
+
+def get_application_process(db: Session, tracking_code: str, paternal_last_name: str):
+    applicantion_process = (
+        db.query(models.Applicant)
+        .filter(
+            and_(
+                models.Applicant.tracking_code == tracking_code.upper().strip(),
+                models.Applicant.paternal_last_name
+                == paternal_last_name.capitalize().strip(),
+            )
+        )
+        .first()
+    )
+
+    if applicantion_process.cv_url != None:
+        cv_path = FileResponse(
+            os.getcwd() + "/ratings" + applicantion_process.cv_url,
+            media_type="application/pdf",
+        )
+    else:
+        cv_path = None
+
+    if applicantion_process.motivation_letter_url != None:
+        motivation_letter_path = FileResponse(
+            os.getcwd() + "/ratings" + applicantion_process.cv_url,
+            media_type="application/pdf",
+        )
+    else:
+        motivation_letter_path = None
+
+    if applicantion_process != None:
+        applicant = {
+            "applicant_id": applicantion_process.id,
+            "vacancy_id": applicantion_process.vacancy_id,
+            "applicant_name": applicantion_process.name,
+            "paternal_last_name": applicantion_process.paternal_last_name,
+            "maternal_last_name": applicantion_process.maternal_last_name,
+            "tracking_code": applicantion_process.tracking_code,
+            "email": applicantion_process.email,
+            "address": applicantion_process.address,
+            "cellphone": applicantion_process.cellphone,
+            "linkedln_url": applicantion_process.linkedln_url,
+            "cv_url": cv_path,
+            "motivation_letter_url": motivation_letter_path,
+            "postulation_status_id": applicantion_process.postulation_status_id,
+            "postulation_status": applicantion_process.postulation_status,
+            "applicant_evaluations": applicantion_process.applicant_evaluations,
+        }
+
+        vacancy_id = applicantion_process.vacancy_id
+        vacancy = get_vacancy_by_id(vacancy_id)
+        result = vacancy | applicant
+
+        return result
+
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail="Process Application Not Found, Please check your information",
+        )
