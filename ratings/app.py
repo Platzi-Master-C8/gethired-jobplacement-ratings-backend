@@ -455,3 +455,32 @@ def get_postulation_status_list(
             },
         )
     return postulation_list
+
+
+@app.get(
+    path="/api/v1/applicants/{vacancy_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=List[schemas.ApplicantOut],
+    tags=["Applicants"],
+    summary="Get a List of Applicant Who Has Apply to a Specific Vacancy",
+)
+def get_applicants_by_vacancy_id(
+    session_local_db: Session = Depends(get_database_session),
+    vacancy_id: int = Path(..., gt=0, title="Vacancy ID", description="Company ID"),
+):
+    if crud.check_vacancy_id_exist(vacancy_id=vacancy_id) != -1:
+        applicants = crud.get_applicants_by_vacancy_id(
+            db=session_local_db, vacancy_id=vacancy_id
+        )
+
+        if len(applicants) == 0:
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "message": "No Applicants have been added to the vacancy",
+                    "data": [],
+                },
+            )
+        return applicants
+    else:
+        raise HTTPException(status_code=404, detail="Vacancy Not Found")

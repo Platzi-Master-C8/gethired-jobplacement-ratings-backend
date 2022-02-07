@@ -452,3 +452,15 @@ def get_application_process(db: Session, tracking_code: str, paternal_last_name:
             status_code=404,
             detail="Process Application Not Found, Please check your information",
         )
+
+
+def get_applicants_by_vacancy_id(db: Session, vacancy_id: int):
+    try:
+        applicants = (
+            db.query(models.Applicant)
+            .filter(models.Applicant.vacancy_id == vacancy_id)
+            .all()
+        )
+        return applicants
+    except SQLAlchemyError as error:
+        raise error
