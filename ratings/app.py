@@ -498,3 +498,36 @@ def get_applicant_by_id(
     id: int = Path(..., gt=0, title="Applicant ID", description="Applicant ID"),
 ):
     return crud.get_applicant_by_id(db=session_local_db, id=id)
+
+
+@app.patch(
+    path="/api/v1/applicants/{id}/postulation-status/{postulation_status_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.ApplicantOut,
+    tags=["Applicants"],
+    summary="Change an Applicant's Application Status",
+)
+def get_applicant_by_id(
+    session_local_db: Session = Depends(get_database_session),
+    id: int = Path(..., gt=0, title="Applicant ID", description="Applicant ID"),
+    postulation_status_id: int = Path(
+        ..., gt=0, title="Postulation Status ID", description="Postulation Status ID"
+    ),
+):
+
+    if crud.get_applicant_by_id(db=session_local_db, id=id) is None:
+        raise HTTPException(status_code=404, detail="Applicant Not Found")
+
+    if (
+        crud.get_postulation_status_by_id(
+            db=session_local_db, postulations_status_id=postulation_status_id
+        )
+        is None
+    ):
+        raise HTTPException(status_code=404, detail="Postulation Status Mot Found")
+
+    return crud.change_postulation_status_id(
+        db=session_local_db,
+        applicant_id=id,
+        postulation_status_id=postulation_status_id,
+    )

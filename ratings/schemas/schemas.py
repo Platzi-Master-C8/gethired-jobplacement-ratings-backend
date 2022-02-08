@@ -122,6 +122,29 @@ class ComplaintOut(ComplaintBase):
         orm_mode = True
 
 
+class PostulationStatusBase(BaseModel):
+    name: str = Field(..., example="Applied", title="Applied", max_length=70)
+
+
+class PostulationStatusCreate(PostulationStatusBase):
+    pass
+
+
+class PostulationStatusOut(PostulationStatusBase):
+
+    created_at: Optional[datetime] = Field(
+        default=None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    name: str = Field(..., example="Applied", title="Applied", max_length=70)
+    id: int = Field(..., gt=0, title="Applicant Status ID", example=1)
+
+    class Config:
+        orm_mode = True
+
+
 class ApplicantBase(BaseModel):
     vacancy_id: int = Field(..., gt=0, title="Vacancy ID", example=1)
     name: str = Field(
@@ -164,6 +187,8 @@ class ApplicantOut(ApplicantBase):
     updated_at: Optional[datetime] = Field(
         None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
+    postulation_status_id: int = Field(..., gt=0, title="Applicant ID", example=1)
+    postulation_status: PostulationStatusOut
     id: int = Field(..., gt=0, title="Applicant ID", example=1)
 
     class Config:
@@ -274,29 +299,6 @@ class RecruitmentProcessEvaluationOut(RecruitmentProcessEvaluationBase):
         None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     id: int = Field(..., gt=0, example=1, title="Recruitment Process Evaluation ID")
-
-    class Config:
-        orm_mode = True
-
-
-class PostulationStatusBase(BaseModel):
-    name: str = Field(..., example="Applied", title="Applied", max_length=70)
-
-
-class PostulationStatusCreate(PostulationStatusBase):
-    pass
-
-
-class PostulationStatusOut(PostulationStatusBase):
-
-    created_at: Optional[datetime] = Field(
-        default=None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    )
-    updated_at: Optional[datetime] = Field(
-        default=None, example=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    )
-    name: str = Field(..., example="Applied", title="Applied", max_length=70)
-    id: int = Field(..., gt=0, title="Applicant Status ID", example=1)
 
     class Config:
         orm_mode = True
