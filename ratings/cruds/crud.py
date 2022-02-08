@@ -471,3 +471,34 @@ def get_applicants_by_vacancy_id(db: Session, vacancy_id: int):
         return applicants
     except SQLAlchemyError as error:
         raise error
+
+
+def get_postulation_status_by_id(db: Session, postulations_status_id: int):
+    try:
+        postulations_status = (
+            db.query(models.PostulationStatus)
+            .filter(models.PostulationStatus.id == postulations_status_id)
+            .first()
+        )
+        if postulations_status != None:
+            return postulations_status
+        else:
+            raise HTTPException(status_code=404, detail="Postulation Status Not Found")
+    except SQLAlchemyError as error:
+        raise error
+
+
+def change_postulation_status_id(
+    db: Session, applicant_id: int, postulation_status_id: int
+):
+    try:
+        applicant = get_applicant_by_id(db=db, id=applicant_id)
+
+        applicant.postulation_status_id = postulation_status_id
+        applicant.updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        db.add(applicant)
+        db.commit()
+        return applicant
+
+    except SQLAlchemyError as error:
+        raise error
