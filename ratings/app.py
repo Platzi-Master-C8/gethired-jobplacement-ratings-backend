@@ -458,10 +458,10 @@ def get_postulation_status_list(
 
 
 @app.get(
-    path="/api/v1/applicants/{vacancy_id}",
+    path="/api/v1/vacancies/{vacancy_id}/applicants",
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.ApplicantOut],
-    tags=["Applicants"],
+    tags=["Vacancies"],
     summary="Get a List of Applicant Who Has Apply to a Specific Vacancy",
 )
 def get_applicants_by_vacancy_id(
@@ -484,3 +484,17 @@ def get_applicants_by_vacancy_id(
         return applicants
     else:
         raise HTTPException(status_code=404, detail="Vacancy Not Found")
+
+
+@app.get(
+    path="/api/v1/applicants/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.ApplicantOut,
+    tags=["Applicants"],
+    summary="Get an Applicant by ID",
+)
+def get_applicant_by_id(
+    session_local_db: Session = Depends(get_database_session),
+    id: int = Path(..., gt=0, title="Applicant ID", description="Applicant ID"),
+):
+    return crud.get_applicant_by_id(db=session_local_db, id=id)
