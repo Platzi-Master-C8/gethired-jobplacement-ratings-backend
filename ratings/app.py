@@ -114,7 +114,8 @@ def get_company_evaluations_by_company_id(
             return JSONResponse(
                 status_code=200,
                 content={
-                    "message": "No evaluations have been added to this company yet"
+                    "message": "No evaluations have been added to this company yet",
+                    "data": [],
                 },
             )
     else:
@@ -466,7 +467,7 @@ def get_postulation_status_list(
 )
 def get_applicants_by_vacancy_id(
     session_local_db: Session = Depends(get_database_session),
-    vacancy_id: int = Path(..., gt=0, title="Vacancy ID", description="Company ID"),
+    vacancy_id: int = Path(..., gt=0, title="Vacancy ID", description="Vacancy ID"),
 ):
     if crud.check_vacancy_id_exist(vacancy_id=vacancy_id) != -1:
         applicants = crud.get_applicants_by_vacancy_id(
