@@ -102,7 +102,14 @@ def get_company_evaluation_by_id(db: Session, id: int):
 
 
 def get_applicant_by_id(db: Session, id: int):
-    return db.query(models.Applicant).filter(models.Applicant.id == id).first()
+    try:
+        applicant = db.query(models.Applicant).filter(models.Applicant.id == id).first()
+        if applicant != None:
+            return applicant
+        else:
+            raise HTTPException(status_code=404, detail="Applicant Not Found")
+    except SQLAlchemyError as error:
+        raise error
 
 
 def get_company_evaluations_by_company_id(
