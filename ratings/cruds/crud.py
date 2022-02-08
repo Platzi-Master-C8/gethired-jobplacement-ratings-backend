@@ -413,21 +413,6 @@ def get_application_process(db: Session, tracking_code: str, paternal_last_name:
         .first()
     )
 
-    if applicantion_process.cv_url != None:
-        cv_path = FileResponse(
-            os.getcwd() + "/ratings" + applicantion_process.cv_url,
-            media_type="application/pdf",
-        )
-    else:
-        cv_path = None
-
-    if applicantion_process.motivation_letter_url != None:
-        motivation_letter_path = FileResponse(
-            os.getcwd() + "/ratings" + applicantion_process.cv_url,
-            media_type="application/pdf",
-        )
-    else:
-        motivation_letter_path = None
 
     if applicantion_process != None:
         applicant = {
@@ -441,8 +426,8 @@ def get_application_process(db: Session, tracking_code: str, paternal_last_name:
             "address": applicantion_process.address,
             "cellphone": applicantion_process.cellphone,
             "linkedln_url": applicantion_process.linkedln_url,
-            "cv_url": cv_path,
-            "motivation_letter_url": motivation_letter_path,
+            "cv_url": applicantion_process.cv_url,
+            "motivation_letter_url": applicantion_process.motivation_letter_url,
             "postulation_status_id": applicantion_process.postulation_status_id,
             "postulation_status": applicantion_process.postulation_status,
             "applicant_evaluations": applicantion_process.applicant_evaluations,
