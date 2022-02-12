@@ -8,6 +8,7 @@ services:
             dockerfile: ./compose/production/Dockerfile
         volumes:
             - .:/code
+            - static_files:/code/static/
         ports:
             - "8000:8000"
         links:
