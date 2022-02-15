@@ -18,6 +18,7 @@ class CompanyEvaluation(Base):
     company_id = Column(Integer, index=True)
     job_title = Column(String(70), nullable=False)
     content_type = Column(String(250), nullable=False)
+    rating = Column(DECIMAL(2, 1), nullable=False)
     career_development_rating = Column(String(15), nullable=False)
     diversity_equal_opportunity_rating = Column(String(15), nullable=False)
     working_environment_rating = Column(String(15), nullable=False)
