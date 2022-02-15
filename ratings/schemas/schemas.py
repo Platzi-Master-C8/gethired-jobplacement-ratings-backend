@@ -43,6 +43,12 @@ class CompanyEvaluationCreate(CompanyEvaluationBase):
 
 
 class CompanyEvaluationOut(CompanyEvaluationBase):
+    rating: condecimal(gt=0, max_digits=2, decimal_places=1) = Field(
+        ...,
+        example=4.5,
+        title="Company Evaluation Rating",
+        description="Company Evaluation Rating",
+    )
     utility_counter: Optional[int] = Field(
         None,
         example=15,

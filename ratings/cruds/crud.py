@@ -143,6 +143,12 @@ def get_company_evaluations_by_company_id(
                 or_(models.CompanyEvaluation.job_location.ilike(f"%{job_location}%"))
             )
 
+        if rating == "DESC":
+            query = query.order_by(models.CompanyEvaluation.rating.desc())
+
+        if rating == "ASC":
+            query = query.order_by(models.CompanyEvaluation.rating.asc())
+
         if helpfulness == "DESC":
             query = query.order_by(models.CompanyEvaluation.utility_counter.desc())
 
@@ -159,6 +165,38 @@ def get_company_evaluations_by_company_id(
 
     except SQLAlchemyError as error:
         raise error
+
+
+def assign_weight(companion_evaluation_criteria: str) -> int:
+    """Return the convertion of a string company evaluation in it's equivalent to a weight
+
+    Args:
+        companion_evaluation_criteria (str): Criteria of of the company evaluation to be evaluated
+
+    Returns:
+        int: Weight assigned
+    """
+    weight_assigned = 0
+
+    if companion_evaluation_criteria == "Good":
+        weight_assigned = 5
+    elif companion_evaluation_criteria == "Regular":
+        weight_assigned = 3
+    elif companion_evaluation_criteria == "Bad":
+        weight_assigned = 1
+
+    return weight_assigned
+
+
+def calculate_company_evaluation_average(*args) -> float:
+
+    average = 0
+
+    if len(args) > 0:
+        weights = list(map(assign_weight, list(args)))
+        average = sum(weights) / 4
+
+    return average
 
 
 def create_company_evaluation(
@@ -198,16 +236,29 @@ def create_company_evaluation(
                 created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             )
+
+            # Calculate rating average
+            rating = (
+                calculate_company_evaluation_average(
+                    company_evaluation.career_development_rating,
+                    company_evaluation.diversity_equal_opportunity_rating,
+                    company_evaluation.working_environment_rating,
+                    company_evaluation.salary_rating,
+                ),
+            )
+            # Integration of the rating value
+            company_evaluation.rating = rating
+
             db.add(company_evaluation)
             db.commit()
             db.refresh(company_evaluation)
+
+            return company_evaluation
 
         except SQLAlchemyError as error:
             raise error
     else:
         raise HTTPException(status_code=404, detail="Company Not Found")
-
-    return company_evaluation
 
 
 def increse_evaluation_utility_rating(db: Session, company_evaluation_id: int) -> Dict:
@@ -412,7 +463,6 @@ def get_application_process(db: Session, tracking_code: str, paternal_last_name:
         )
         .first()
     )
-
 
     if applicantion_process != None:
         applicant = {

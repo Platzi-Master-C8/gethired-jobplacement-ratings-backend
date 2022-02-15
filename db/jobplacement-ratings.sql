@@ -12,6 +12,7 @@ CREATE TABLE company_evaluations
     company_id bigint NOT NULL,
     job_title VARCHAR(70) NOT NULL,
     content_type VARCHAR(280) NOT NULL,
+    rating DECIMAL(2, 1) NOT NULL,
     career_development_rating VARCHAR(15) NOT NULL,
     diversity_equal_opportunity_rating VARCHAR(15) NOT NULL,
     working_environment_rating VARCHAR(15) NOT NULL,
