@@ -29,6 +29,7 @@ from ratings.utils.utils import Util
 load_dotenv()
 COMPANIES_ENDPOINT = os.getenv("COMPANIES_ENDPOINT")
 VACANCIES_ENDPOINT = os.getenv("VACANCIES_ENDPOINT")
+SERVER_URL = os.getenv("SERVER_URL")
 
 
 def check_company_id_exist(company_id: int) -> int:
@@ -354,11 +355,14 @@ def create_applicant(
     paternal_last_name: str,
     maternal_last_name: str,
     email: str,
-    address: str,
     cellphone: int,
     linkedln_url: str,
     motivation_letter_url: str,
     cv_url: str,
+    country: str,
+    city: str,
+    job_title: str,
+    company: str,
 ):
     try:
         applicant = models.Applicant(
@@ -369,10 +373,13 @@ def create_applicant(
             maternal_last_name=maternal_last_name.capitalize().strip(),
             tracking_code=Util.create_tracking_code(),
             email=email.lower().strip(),
-            address=address,
             cellphone=cellphone,
             linkedln_url=linkedln_url,
             cv_url=cv_url,
+            country=country,
+            city=city,
+            job_title=job_title,
+            company=company,
             motivation_letter_url=motivation_letter_url,
             created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             updated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -473,10 +480,13 @@ def get_application_process(db: Session, tracking_code: str, paternal_last_name:
             "maternal_last_name": applicantion_process.maternal_last_name,
             "tracking_code": applicantion_process.tracking_code,
             "email": applicantion_process.email,
-            "address": applicantion_process.address,
             "cellphone": applicantion_process.cellphone,
             "linkedln_url": applicantion_process.linkedln_url,
             "cv_url": applicantion_process.cv_url,
+            "country": applicantion_process.country,
+            "city": applicantion_process.city,
+            "last_job_title": applicantion_process.job_title,
+            "last_company_name": applicantion_process.company,
             "motivation_letter_url": applicantion_process.motivation_letter_url,
             "postulation_status_id": applicantion_process.postulation_status_id,
             "postulation_status": applicantion_process.postulation_status,

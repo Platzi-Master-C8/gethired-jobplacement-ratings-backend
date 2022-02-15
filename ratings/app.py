@@ -308,7 +308,6 @@ def register_applicants(
     paternal_last_name: str = Form(..., max_length=40),
     maternal_last_name: str = Form(..., max_length=40),
     email: str = Form(..., max_length=70, title="Email"),
-    address: str = Form(default=None, max_length=150, title="Address"),
     cellphone: int = Form(...),
     linkedln_url: str = Form(
         example="https://www.linkedin.com/in/javieramayapat/",
@@ -317,29 +316,37 @@ def register_applicants(
     ),
     cv_file: UploadFile = File(..., title="CV File"),
     motivation_letter_file: UploadFile = File(default=None, title="Motivation Letter"),
+    country: str = Form(default=None, title="Country", max_length=70),
+    city: str = Form(default=None, title="Country", max_length=70),
+    job_title: str = Form(default=None, title="Job Title", max_length=70),
+    company: str = Form(default=None, title="Company", max_length=150),
     session_local_db: Session = Depends(get_database_session),
 ):
     if crud.check_vacancy_id_exist(vacancy_id=vacancy_id) != -1:
 
-        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+        ROOT_DIR = os.getcwd()
         # Save the cv files
         if cv_file.content_type not in ["application/pdf"]:
             raise HTTPException(400, detail="Invalid document type")
         else:
-            file_location_cv = f"/doc/cv_{int(time.time())}.pdf"
+            cv_file_name = f"cv_{int(time.time())}.pdf"
+            file_location_cv = f"/static/{cv_file_name}.pdf"
             with open(ROOT_DIR + file_location_cv, "wb+") as file_object:
                 file_object.write(cv_file.file.read())
 
-        # Save the motivation letter
+        # # Save the motivation letter
         if not motivation_letter_file:
-            file_location_motivation_letter = None
+            motivation_letter_file_name = None
 
         elif motivation_letter_file.content_type not in ["application/pdf"]:
             raise HTTPException(400, detail="Invalid document type")
 
         else:
-            file_location_motivation_letter = f"/doc/ml_{int(time.time())}.pdf"
-            with open(file_location_motivation_letter, "wb+") as file_object:
+            motivation_letter_file_name = f"ml_{int(time.time())}.pdf"
+            file_location_motivation_letter = (
+                f"/static/{motivation_letter_file_name}.pdf"
+            )
+            with open(ROOT_DIR + file_location_motivation_letter, "wb+") as file_object:
                 file_object.write(motivation_letter_file.file.read())
 
         return crud.create_applicant(
@@ -349,11 +356,14 @@ def register_applicants(
             paternal_last_name=paternal_last_name,
             maternal_last_name=maternal_last_name,
             email=email,
-            address=address,
             cellphone=cellphone,
             linkedln_url=linkedln_url,
-            cv_url=file_location_cv,
-            motivation_letter_url=file_location_motivation_letter,
+            cv_url=cv_file_name,
+            motivation_letter_url=motivation_letter_file_name,
+            country=country,
+            city=city,
+            job_title=job_title,
+            company=company,
         )
     else:
         raise HTTPException(status_code=404, detail="Vacancy Not Found")
