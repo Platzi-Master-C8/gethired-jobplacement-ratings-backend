@@ -65,16 +65,40 @@ def get_database_session():
     status_code=status.HTTP_200_OK,
     summary="Get the general ratings from a company",
 )
-def get_general_ratings(id: int = Path(..., gt=0, example=1, title="Company ID")):
+def get_general_ratings(
+    session_local_db: Session = Depends(get_database_session),
+    id: int = Path(..., gt=0, example=1, title="Company ID"),
+):
+
+    total_company_evaluations = crud.get_amount_of_company_evaluation_by_id(
+        db=session_local_db, company_id=id
+    )
+    gral_company_rating = crud.calculate_gral_company_rating(
+        db=session_local_db, company_id=id
+    )
+    gral_career_development_rating = crud.calculate_gral_career_development_rating(
+        db=session_local_db, company_id=id
+    )
+    gral_diversity_equal_opportunity_rating = (
+        crud.calculate_gral_diversity_equal_opportunity_rating(
+            db=session_local_db, company_id=id
+        )
+    )
+    gral_working_environment_rating = crud.calculate_gral_working_environment_rating(
+        db=session_local_db, company_id=id
+    )
+    gral_salary_rating = crud.calculate_gral_salary_rating(
+        db=session_local_db, company_id=id
+    )
 
     return {
         "company_id": id,
-        "company_rating": 4.5,
-        "total_reviews": 500,
-        "gral_career_development_rating": 4.5,
-        "gral_diversity_equal_opportunity_rating": 4,
-        "gral_working_environment_rating": 5,
-        "gral_salary_rating": 4,
+        "company_rating": gral_company_rating,
+        "total_reviews": total_company_evaluations,
+        "gral_career_development_rating": gral_career_development_rating,
+        "gral_diversity_equal_opportunity_rating": gral_diversity_equal_opportunity_rating,
+        "gral_working_environment_rating": gral_working_environment_rating,
+        "gral_salary_rating": gral_salary_rating,
     }
 
 
