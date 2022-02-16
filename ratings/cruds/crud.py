@@ -1,13 +1,13 @@
 # Python
 import os
-
+import functools
+import operator
 
 # Typing
 from typing import Dict, List, Optional
 
 # Third-party libraries
 from fastapi import HTTPException
-from fastapi.responses import FileResponse
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -22,13 +22,13 @@ from dotenv import load_dotenv
 # Project
 from ratings.models import models
 from ratings.schemas import schemas
-from ratings.utils import enums
 from ratings.utils.utils import Util
 
 
 load_dotenv()
 COMPANIES_ENDPOINT = os.getenv("COMPANIES_ENDPOINT")
 VACANCIES_ENDPOINT = os.getenv("VACANCIES_ENDPOINT")
+AMOUNT_OF_COMPANY_CRITERIA = os.getenv("AMOUNT_OF_COMPANY_CRITERIA")
 
 
 def check_company_id_exist(company_id: int) -> int:
@@ -112,6 +112,198 @@ def get_applicant_by_id(db: Session, id: int):
         raise error
 
 
+# total company reviews by companyh id
+def get_amount_of_company_evaluation_by_id(db: Session, company_id: int):
+    try:
+        amount_of_company_evaluation_by_company_id = (
+            db.query(models.CompanyEvaluation)
+            .filter(models.CompanyEvaluation.company_id == company_id)
+            .count()
+        )
+        return amount_of_company_evaluation_by_company_id
+
+    except SQLAlchemyError as error:
+        raise error
+
+
+# okay
+def get_career_development_rating_values_by_company_id(
+    db: Session, company_id: int
+) -> List:
+    result_query = (
+        db.query(models.CompanyEvaluation.career_development_rating)
+        .filter(models.CompanyEvaluation.company_id == company_id)
+        .all()
+    )
+
+    list_of_career_development_rating = []
+
+    if len(result_query) > 0:
+        list_of_career_development_rating = list(
+            map(Util.tranform_tuple_in_string, result_query)
+        )
+
+    return list_of_career_development_rating
+
+
+def get_diversity_equal_opportunity_rating_values_by_company_id(
+    db: Session, company_id: int
+) -> List:
+    result_query = (
+        db.query(models.CompanyEvaluation.diversity_equal_opportunity_rating)
+        .filter(models.CompanyEvaluation.company_id == company_id)
+        .all()
+    )
+
+    list_of_diversity_equal_opportunity_rating = []
+
+    if len(result_query) > 0:
+        list_of_diversity_equal_opportunity_rating = list(
+            map(Util.tranform_tuple_in_string, result_query)
+        )
+
+    return list_of_diversity_equal_opportunity_rating
+
+
+def get_working_environment_rating_values_by_company_id(
+    db: Session, company_id: int
+) -> List:
+    result_query = (
+        db.query(models.CompanyEvaluation.working_environment_rating)
+        .filter(models.CompanyEvaluation.company_id == company_id)
+        .all()
+    )
+
+    list_of_working_environment_rating = []
+
+    if len(result_query) > 0:
+        list_of_working_environment_rating = list(
+            map(Util.tranform_tuple_in_string, result_query)
+        )
+
+    return list_of_working_environment_rating
+
+
+def get_salary_rating_values_by_company_id(db: Session, company_id: int) -> List:
+    result_query = (
+        db.query(models.CompanyEvaluation.salary_rating)
+        .filter(models.CompanyEvaluation.company_id == company_id)
+        .all()
+    )
+
+    list_of_salary_rating = []
+
+    if len(result_query) > 0:
+        list_of_salary_rating = list(map(Util.tranform_tuple_in_string, result_query))
+
+    return list_of_salary_rating
+
+
+def calculate_gral_career_development_rating(db: Session, company_id: int):
+
+    amount_of_company_evaluation_by_company_id = get_amount_of_company_evaluation_by_id(
+        db=db, company_id=company_id
+    )
+    list_of_career_development_rating = (
+        get_career_development_rating_values_by_company_id(db=db, company_id=company_id)
+    )
+    gral_rating = 0
+
+    if amount_of_company_evaluation_by_company_id > 0:
+        list_of_weight = list(
+            map(Util.assign_weight, list_of_career_development_rating)
+        )
+        summatory_of_weigth = functools.reduce(operator.add, list_of_weight)
+        gral_rating = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+
+    return gral_rating
+
+
+def calculate_gral_diversity_equal_opportunity_rating(db: Session, company_id: int):
+
+    amount_of_company_evaluation_by_company_id = get_amount_of_company_evaluation_by_id(
+        db=db, company_id=company_id
+    )
+    list_of_diversity_equal_opportunity_rating = (
+        get_diversity_equal_opportunity_rating_values_by_company_id(
+            db=db, company_id=company_id
+        )
+    )
+    gral_rating = 0
+
+    if amount_of_company_evaluation_by_company_id > 0:
+        list_of_weight = list(
+            map(Util.assign_weight, list_of_diversity_equal_opportunity_rating)
+        )
+        summatory_of_weigth = functools.reduce(operator.add, list_of_weight)
+        gral_rating = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+
+    return gral_rating
+
+
+def calculate_gral_working_environment_rating(db: Session, company_id: int):
+
+    amount_of_company_evaluation_by_company_id = get_amount_of_company_evaluation_by_id(
+        db=db, company_id=company_id
+    )
+    list_of_working_environment_rating = (
+        get_working_environment_rating_values_by_company_id(
+            db=db, company_id=company_id
+        )
+    )
+    gral_rating = 0
+
+    if amount_of_company_evaluation_by_company_id > 0:
+        list_of_weight = list(
+            map(Util.assign_weight, list_of_working_environment_rating)
+        )
+        summatory_of_weigth = functools.reduce(operator.add, list_of_weight)
+        gral_rating = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+
+    return gral_rating
+
+
+def calculate_gral_salary_rating(db: Session, company_id: int):
+
+    amount_of_company_evaluation_by_company_id = get_amount_of_company_evaluation_by_id(
+        db=db, company_id=company_id
+    )
+    list_of_salary_rating = get_salary_rating_values_by_company_id(
+        db=db, company_id=company_id
+    )
+    gral_rating = 0
+
+    if amount_of_company_evaluation_by_company_id > 0:
+        list_of_weight = list(map(Util.assign_weight, list_of_salary_rating))
+        summatory_of_weigth = functools.reduce(operator.add, list_of_weight)
+        gral_rating = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+
+    return gral_rating
+
+
+def calculate_gral_company_rating(db: Session, company_id: int):
+    gral_career_development_rating = calculate_gral_career_development_rating(
+        db=db, company_id=company_id
+    )
+    gral_diversity_equal_opportunity_rating = (
+        calculate_gral_diversity_equal_opportunity_rating(db=db, company_id=company_id)
+    )
+    gral_working_environment_rating = calculate_gral_working_environment_rating(
+        db=db, company_id=company_id
+    )
+    gral_salary_rating = calculate_gral_salary_rating(db=db, company_id=company_id)
+
+    sum_of_gral_ratings = (
+        gral_career_development_rating
+        + gral_diversity_equal_opportunity_rating
+        + gral_working_environment_rating
+        + gral_salary_rating
+    )
+    result = sum_of_gral_ratings / int(AMOUNT_OF_COMPANY_CRITERIA)
+    gral_company_rating = Util.round_values(result, 1)
+    return gral_company_rating
+
+
 def get_company_evaluations_by_company_id(
     db: Session,
     company_id: int,
@@ -167,34 +359,13 @@ def get_company_evaluations_by_company_id(
         raise error
 
 
-def assign_weight(companion_evaluation_criteria: str) -> int:
-    """Return the convertion of a string company evaluation in it's equivalent to a weight
-
-    Args:
-        companion_evaluation_criteria (str): Criteria of of the company evaluation to be evaluated
-
-    Returns:
-        int: Weight assigned
-    """
-    weight_assigned = 0
-
-    if companion_evaluation_criteria == "Good":
-        weight_assigned = 5
-    elif companion_evaluation_criteria == "Regular":
-        weight_assigned = 3
-    elif companion_evaluation_criteria == "Bad":
-        weight_assigned = 1
-
-    return weight_assigned
-
-
 def calculate_company_evaluation_average(*args) -> float:
 
     average = 0
 
     if len(args) > 0:
-        weights = list(map(assign_weight, list(args)))
-        average = sum(weights) / 4
+        weights = list(map(Util.assign_weight, list(args)))
+        average = sum(weights) / AMOUNT_OF_COMPANY_CRITERIA
 
     return average
 
