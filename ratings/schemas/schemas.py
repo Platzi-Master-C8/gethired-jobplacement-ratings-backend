@@ -163,17 +163,21 @@ class ApplicantBase(BaseModel):
         ..., max_length=40, description="Applicant Name", example="Patricio"
     )
     email: EmailStr = Field(..., example="javieramayapat@gmail.com")
-    address: str = Field(
-        default=None,
-        max_length=150,
-        title="Address",
-        example="CARRERA 7 71 21 PISO 18 TORRE A, BOGOTA, BOGOTA",
-    )
     cellphone: int = Field(..., title="Cellphone", example="7441487566")
     linkedln_url: HttpUrl = Field(
         default=None,
         title="Linkedln URL",
         example="https://www.linkedin.com/in/javieramayapat/",
+    )
+    country: str = Field(
+        default=None, title="Country", example="Country", max_length=70
+    )
+    city: str = Field(default=None, title="City", example="City", max_length=70)
+    job_title: str = Field(
+        default=None, title="Job Title", example="Job Title", max_length=70
+    )
+    company: str = Field(
+        default=None, title="Company", example="Company", max_length=70
     )
 
 
