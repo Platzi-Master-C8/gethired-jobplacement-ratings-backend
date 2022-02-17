@@ -81,6 +81,22 @@ def check_vacancy_id_exist(vacancy_id: int) -> int:
     return company_id
 
 
+def create_vacancy_applicant(vacancy_id: int, applicant_id):
+
+    headers = {"Content-Type": "application/json; charset=utf-8"}
+    data = {
+        "vacancy_id": vacancy_id,
+        "applicant_id": applicant_id,
+    }
+
+    response = requests.post(
+        f"{VACANCIES_ENDPOINT}/{vacancy_id}/applications", json=data, headers=headers
+    )
+    print("Status Code", response.status_code)
+    print("----------------")
+    print("JSON Response ", response.json())
+
+
 def get_vacancy_by_id(vacancy_id: int) -> dict:
 
     r = requests.get(VACANCIES_ENDPOINT)
