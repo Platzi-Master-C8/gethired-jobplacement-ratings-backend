@@ -373,7 +373,7 @@ def register_applicants(
             with open(ROOT_DIR + file_location_motivation_letter, "wb+") as file_object:
                 file_object.write(motivation_letter_file.file.read())
 
-        return crud.create_applicant(
+        applicant = crud.create_applicant(
             db=session_local_db,
             vacancy_id=vacancy_id,
             name=name,
@@ -389,6 +389,11 @@ def register_applicants(
             job_title=job_title,
             company=company,
         )
+
+        # integration of applicant in enterprise database
+        crud.create_vacancy_applicant(vacancy_id=vacancy_id, applicant_id=applicant.id)
+
+        return applicant
     else:
         raise HTTPException(status_code=404, detail="Vacancy Not Found")
 
