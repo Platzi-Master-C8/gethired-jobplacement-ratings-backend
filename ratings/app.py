@@ -20,6 +20,7 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 from fastapi.responses import JSONResponse
+from pydantic import EmailStr, HttpUrl
 
 # SQLAlchemy
 from sqlalchemy.orm import Session
@@ -328,29 +329,56 @@ def get_reporting_reason_types(
 )
 def register_applicants(
     vacancy_id: int = Form(..., gt=0, title="Vacancy ID", description="Vacancy ID"),
-    name: str = Form(..., max_length=40, title="Applicant Name"),
-    paternal_last_name: str = Form(..., max_length=40),
-    maternal_last_name: str = Form(..., max_length=40),
-    email: str = Form(..., max_length=70, title="Email"),
-    cellphone: int = Form(...),
-    linkedln_url: str = Form(
-        example="https://www.linkedin.com/in/javieramayapat/",
-        default=None,
-        max_length=150,
+    name: str = Form(
+        ..., max_length=40, title="Applicant Name", description="Applicant Name"
     ),
-    cv_file: UploadFile = File(..., title="CV File"),
-    motivation_letter_file: UploadFile = File(default=None, title="Motivation Letter"),
-    country: str = Form(default=None, title="Country", max_length=70),
-    city: str = Form(default=None, title="Country", max_length=70),
-    job_title: str = Form(default=None, title="Job Title", max_length=70),
-    company: str = Form(default=None, title="Company", max_length=150),
+    paternal_last_name: str = Form(
+        ..., max_length=40, title="paternal_last_name", description="Paternal Last Name"
+    ),
+    maternal_last_name: str = Form(
+        ..., max_length=40, title="maternal_last_name", description="Maternal Last Name"
+    ),
+    email: EmailStr = Form(..., title="email", description="Applicant's Email"),
+    cellphone: str = Form(
+        default=None,
+        max_length=13,
+        title="cellphone",
+        description="Applicant's cellphone",
+    ),
+    linkedin_url: HttpUrl = Form(
+        default=None,
+        title="linkedin_url",
+        description="Applicant's linkedin url",
+    ),
+    cv_file: UploadFile = File(default=None, title="CV File", description="CV File"),
+    motivation_letter_file: UploadFile = File(
+        default=None, title="Motivation Letter", description="Motivation Letter File"
+    ),
+    country: str = Form(
+        default=None, title="Country", max_length=70, description="Country"
+    ),
+    city: str = Form(
+        default=None, title="Country", max_length=70, description="Country"
+    ),
+    job_title: str = Form(
+        default=None, title="Job Title", max_length=70, description="Job title"
+    ),
+    company: str = Form(
+        default=None,
+        title="Company",
+        max_length=150,
+        description="Last company in which the applicant worked",
+    ),
     session_local_db: Session = Depends(get_database_session),
 ):
     if crud.check_vacancy_id_exist(vacancy_id=vacancy_id) != -1:
 
         ROOT_DIR = os.getcwd()
         # Save the cv files
-        if cv_file.content_type not in ["application/pdf"]:
+        if not cv_file:
+            cv_file_name = None
+
+        elif cv_file.content_type not in ["application/pdf"]:
             raise HTTPException(400, detail="Invalid document type")
         else:
             cv_file_name = f"cv_{int(time.time())}.pdf"
@@ -358,7 +386,7 @@ def register_applicants(
             with open(ROOT_DIR + file_location_cv, "wb+") as file_object:
                 file_object.write(cv_file.file.read())
 
-        # # Save the motivation letter
+        # Save the motivation letter
         if not motivation_letter_file:
             motivation_letter_file_name = None
 
@@ -381,7 +409,7 @@ def register_applicants(
             maternal_last_name=maternal_last_name,
             email=email,
             cellphone=cellphone,
-            linkedln_url=linkedln_url,
+            linkedin_url=linkedin_url,
             cv_url=cv_file_name,
             motivation_letter_url=motivation_letter_file_name,
             country=country,

@@ -152,33 +152,25 @@ class PostulationStatusOut(PostulationStatusBase):
 
 
 class ApplicantBase(BaseModel):
-    vacancy_id: int = Field(..., gt=0, title="Vacancy ID", example=1)
-    name: str = Field(
-        ..., max_length=40, description="Applicant Name", example="Javier"
-    )
+    vacancy_id: int = Field(..., gt=0)
+    name: str = Field(..., max_length=40)
     paternal_last_name: str = Field(
-        ..., max_length=40, description="Applicant Name", example="Amaya"
+        ...,
+        max_length=40,
     )
     maternal_last_name: str = Field(
-        ..., max_length=40, description="Applicant Name", example="Patricio"
+        ...,
+        max_length=40,
     )
-    email: EmailStr = Field(..., example="javieramayapat@gmail.com")
-    cellphone: int = Field(..., title="Cellphone", example="7441487566")
-    linkedln_url: HttpUrl = Field(
+    email: EmailStr = Field(...)
+    cellphone: str = Field(default=None, max_length=13)
+    linkedin_url: HttpUrl = Field(
         default=None,
-        title="Linkedln URL",
-        example="https://www.linkedin.com/in/javieramayapat/",
     )
-    country: str = Field(
-        default=None, title="Country", example="Country", max_length=70
-    )
-    city: str = Field(default=None, title="City", example="City", max_length=70)
-    job_title: str = Field(
-        default=None, title="Job Title", example="Job Title", max_length=70
-    )
-    company: str = Field(
-        default=None, title="Company", example="Company", max_length=70
-    )
+    country: str = Field(default=None, max_length=70)
+    city: str = Field(default=None, max_length=70)
+    job_title: str = Field(default=None, max_length=70)
+    company: str = Field(default=None, max_length=70)
 
 
 class ApplicantCreate(ApplicantBase):
@@ -186,7 +178,7 @@ class ApplicantCreate(ApplicantBase):
 
 
 class ApplicantOut(ApplicantBase):
-    cv_url: str = Field(...)
+    cv_url: str = Field(default=None)
     motivation_letter_url: str = Field(default=None)
     tracking_code: str = Field(
         ..., max_length=8, title="Tracking Code", example="ADER543J"

@@ -9,6 +9,7 @@ from typing import Dict, List, Optional
 # Third-party libraries
 from fastapi import HTTPException
 from datetime import datetime
+from pydantic import EmailStr, HttpUrl
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import asc, desc
@@ -540,9 +541,9 @@ def create_applicant(
     name: str,
     paternal_last_name: str,
     maternal_last_name: str,
-    email: str,
-    cellphone: int,
-    linkedln_url: str,
+    email: EmailStr,
+    cellphone: str,
+    linkedin_url: HttpUrl,
     motivation_letter_url: str,
     cv_url: str,
     country: str,
@@ -560,7 +561,7 @@ def create_applicant(
             tracking_code=Util.create_tracking_code(),
             email=email.lower().strip(),
             cellphone=cellphone,
-            linkedln_url=linkedln_url,
+            linkedin_url=linkedin_url,
             cv_url=cv_url,
             country=country,
             city=city,
@@ -667,7 +668,7 @@ def get_application_process(db: Session, tracking_code: str, paternal_last_name:
             "tracking_code": applicantion_process.tracking_code,
             "email": applicantion_process.email,
             "cellphone": applicantion_process.cellphone,
-            "linkedln_url": applicantion_process.linkedln_url,
+            "linkedin_url": applicantion_process.linkedin_url,
             "cv_url": applicantion_process.cv_url,
             "country": applicantion_process.country,
             "city": applicantion_process.city,
