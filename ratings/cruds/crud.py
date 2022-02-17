@@ -337,7 +337,7 @@ def get_company_evaluations_by_company_id(
         query = db.query(models.CompanyEvaluation)
 
         if company_id:
-            query = query.filter(company_id == company_id)
+            query = query.filter(models.CompanyEvaluation.company_id == company_id)
 
         if job_title:
             query = query.filter(
