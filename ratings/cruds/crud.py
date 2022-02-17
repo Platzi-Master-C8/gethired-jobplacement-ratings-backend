@@ -29,7 +29,7 @@ from ratings.utils.utils import Util
 load_dotenv()
 COMPANIES_ENDPOINT = os.getenv("COMPANIES_ENDPOINT")
 VACANCIES_ENDPOINT = os.getenv("VACANCIES_ENDPOINT")
-AMOUNT_OF_COMPANY_CRITERIA = os.getenv("AMOUNT_OF_COMPANY_CRITERIA")
+AMOUNT_OF_COMPANY_CRITERIA = int(os.getenv("AMOUNT_OF_COMPANY_CRITERIA"))
 
 
 def check_company_id_exist(company_id: int) -> int:
@@ -129,7 +129,6 @@ def get_applicant_by_id(db: Session, id: int):
         raise error
 
 
-# total company reviews by companyh id
 def get_amount_of_company_evaluation_by_id(db: Session, company_id: int):
     try:
         amount_of_company_evaluation_by_company_id = (
@@ -143,7 +142,6 @@ def get_amount_of_company_evaluation_by_id(db: Session, company_id: int):
         raise error
 
 
-# okay
 def get_career_development_rating_values_by_company_id(
     db: Session, company_id: int
 ) -> List:
@@ -231,7 +229,8 @@ def calculate_gral_career_development_rating(db: Session, company_id: int):
             map(Util.assign_weight, list_of_career_development_rating)
         )
         summatory_of_weigth = functools.reduce(operator.add, list_of_weight)
-        gral_rating = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+        result = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+        gral_rating = Util.round_values(result,1)
 
     return gral_rating
 
@@ -252,8 +251,9 @@ def calculate_gral_diversity_equal_opportunity_rating(db: Session, company_id: i
         list_of_weight = list(
             map(Util.assign_weight, list_of_diversity_equal_opportunity_rating)
         )
-        summatory_of_weigth = functools.reduce(operator.add, list_of_weight)
-        gral_rating = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+        summatory_of_weight = functools.reduce(operator.add, list_of_weight)
+        result = summatory_of_weight / amount_of_company_evaluation_by_company_id
+        gral_rating = Util.round_values(result,1)
 
     return gral_rating
 
@@ -274,8 +274,9 @@ def calculate_gral_working_environment_rating(db: Session, company_id: int):
         list_of_weight = list(
             map(Util.assign_weight, list_of_working_environment_rating)
         )
-        summatory_of_weigth = functools.reduce(operator.add, list_of_weight)
-        gral_rating = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+        summatory_of_weight = functools.reduce(operator.add, list_of_weight)
+        result = summatory_of_weight / amount_of_company_evaluation_by_company_id
+        gral_rating = Util.round_values(result,1)
 
     return gral_rating
 
@@ -292,8 +293,9 @@ def calculate_gral_salary_rating(db: Session, company_id: int):
 
     if amount_of_company_evaluation_by_company_id > 0:
         list_of_weight = list(map(Util.assign_weight, list_of_salary_rating))
-        summatory_of_weigth = functools.reduce(operator.add, list_of_weight)
-        gral_rating = summatory_of_weigth / amount_of_company_evaluation_by_company_id
+        summatory_of_weight = functools.reduce(operator.add, list_of_weight)
+        result = summatory_of_weight / amount_of_company_evaluation_by_company_id
+        gral_rating = Util.round_values(result,1)
 
     return gral_rating
 
@@ -316,7 +318,7 @@ def calculate_gral_company_rating(db: Session, company_id: int):
         + gral_working_environment_rating
         + gral_salary_rating
     )
-    result = sum_of_gral_ratings / int(AMOUNT_OF_COMPANY_CRITERIA)
+    result = sum_of_gral_ratings / AMOUNT_OF_COMPANY_CRITERIA
     gral_company_rating = Util.round_values(result, 1)
     return gral_company_rating
 
@@ -382,7 +384,8 @@ def calculate_company_evaluation_average(*args) -> float:
 
     if len(args) > 0:
         weights = list(map(Util.assign_weight, list(args)))
-        average = sum(weights) / AMOUNT_OF_COMPANY_CRITERIA
+        total = sum(weights) / AMOUNT_OF_COMPANY_CRITERIA
+        average = Util.round_values(total,1)
 
     return average
 
