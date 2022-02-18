@@ -92,15 +92,22 @@ def get_general_ratings(
         db=session_local_db, company_id=id
     )
 
-    return {
-        "company_id": id,
-        "company_rating": gral_company_rating,
-        "total_reviews": total_company_evaluations,
-        "gral_career_development_rating": gral_career_development_rating,
-        "gral_diversity_equal_opportunity_rating": gral_diversity_equal_opportunity_rating,
-        "gral_working_environment_rating": gral_working_environment_rating,
-        "gral_salary_rating": gral_salary_rating,
-    }
+    company = crud.get_company_by_id(company_id=id)
+
+    return JSONResponse(
+        status_code=200,
+        content={
+            "data": {
+                "company_information": company,
+                "company_rating": gral_company_rating,
+                "total_reviews": total_company_evaluations,
+                "gral_career_development_rating": gral_career_development_rating,
+                "gral_diversity_equal_opportunity_rating": gral_diversity_equal_opportunity_rating,
+                "gral_working_environment_rating": gral_working_environment_rating,
+                "gral_salary_rating": gral_salary_rating,
+            },
+        },
+    )
 
 
 # Company Evaluations Path Operations
