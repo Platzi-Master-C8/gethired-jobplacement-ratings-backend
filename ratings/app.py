@@ -347,7 +347,7 @@ def register_applicants(
     ),
     email: EmailStr = Form(..., title="email", description="Applicant's Email"),
     cellphone: str = Form(
-        default=None,
+        ...,
         max_length=13,
         title="cellphone",
         description="Applicant's cellphone",
@@ -357,15 +357,15 @@ def register_applicants(
         title="linkedin_url",
         description="Applicant's linkedin url",
     ),
-    cv_file: UploadFile = File(default=None, title="CV File", description="CV File"),
+    cv_file: UploadFile = File(..., title="CV File", description="CV File"),
     motivation_letter_file: UploadFile = File(
         default=None, title="Motivation Letter", description="Motivation Letter File"
     ),
     country: str = Form(
-        default=None, title="Country", max_length=70, description="Country"
+        ..., title="Country", max_length=70, description="Country"
     ),
     city: str = Form(
-        default=None, title="Country", max_length=70, description="Country"
+        ..., title="Country", max_length=70, description="Country"
     ),
     job_title: str = Form(
         default=None, title="Job Title", max_length=70, description="Job title"
@@ -389,7 +389,7 @@ def register_applicants(
             raise HTTPException(400, detail="Invalid document type")
         else:
             cv_file_name = f"cv_{int(time.time())}.pdf"
-            file_location_cv = f"/static/{cv_file_name}.pdf"
+            file_location_cv = f"/static/{cv_file_name}"
             with open(ROOT_DIR + file_location_cv, "wb+") as file_object:
                 file_object.write(cv_file.file.read())
 
