@@ -163,12 +163,12 @@ class ApplicantBase(BaseModel):
         max_length=40,
     )
     email: EmailStr = Field(...)
-    cellphone: str = Field(default=None, max_length=13)
+    cellphone: str = Field(..., max_length=13)
     linkedin_url: HttpUrl = Field(
         default=None,
     )
-    country: str = Field(default=None, max_length=70)
-    city: str = Field(default=None, max_length=70)
+    country: str = Field(..., max_length=70)
+    city: str = Field(..., max_length=70)
     job_title: str = Field(default=None, max_length=70)
     company: str = Field(default=None, max_length=70)
 
@@ -178,7 +178,7 @@ class ApplicantCreate(ApplicantBase):
 
 
 class ApplicantOut(ApplicantBase):
-    cv_url: str = Field(default=None)
+    cv_url: str = Field(...)
     motivation_letter_url: str = Field(default=None)
     tracking_code: str = Field(
         ..., max_length=8, title="Tracking Code", example="ADER543J"
