@@ -361,12 +361,8 @@ def register_applicants(
     motivation_letter_file: UploadFile = File(
         default=None, title="Motivation Letter", description="Motivation Letter File"
     ),
-    country: str = Form(
-        ..., title="Country", max_length=70, description="Country"
-    ),
-    city: str = Form(
-        ..., title="Country", max_length=70, description="Country"
-    ),
+    country: str = Form(..., title="Country", max_length=70, description="Country"),
+    city: str = Form(..., title="Country", max_length=70, description="Country"),
     job_title: str = Form(
         default=None, title="Job Title", max_length=70, description="Job title"
     ),
@@ -559,6 +555,17 @@ def get_applicants_by_vacancy_id(
         return applicants
     else:
         raise HTTPException(status_code=404, detail="Vacancy Not Found")
+
+
+@app.get(
+    path="/api/v1/applicants/",
+    status_code=status.HTTP_200_OK,
+    response_model=List[schemas.ApplicantOut],
+    tags=["Applicants"],
+    summary="List all Applicants",
+)
+def get_all_applicants(session_local_db: Session = Depends(get_database_session)):
+    return crud.get_applicants(db=session_local_db)
 
 
 @app.get(
