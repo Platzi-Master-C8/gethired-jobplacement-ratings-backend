@@ -548,6 +548,10 @@ def create_complaint(
     return complaint
 
 
+def get_applicants(db: Session):
+    return db.query(models.Applicant).all()
+
+
 def create_applicant(
     db: Session,
     vacancy_id: int,
