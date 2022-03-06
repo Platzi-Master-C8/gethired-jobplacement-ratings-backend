@@ -31,6 +31,7 @@ from ratings.cruds import crud
 from ratings.models import models
 from ratings.schemas import schemas
 from ratings.config.database import SessionLocal, engine
+from ratings.utils.utils import Util
 
 
 models.Base.metadata.create_all(engine)
@@ -420,7 +421,10 @@ def register_applicants(
             job_title=job_title,
             company=company,
         )
-
+        
+        # Send Email
+        Util.send_offer_tracking_email(applicant.email,applicant.tracking_code,applicant.paternal_last_name)
+        
         # integration of applicant in enterprise database
         crud.create_vacancy_applicant(vacancy_id=vacancy_id, applicant_id=applicant.id)
 
