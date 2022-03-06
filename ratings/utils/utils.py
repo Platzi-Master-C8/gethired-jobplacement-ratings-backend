@@ -96,7 +96,9 @@ class Util:
         """
         return functools.reduce(operator.add, (tuple))
 
-    def send_offer_tracking_email(user_email:str,tracking_code:str, paternal_last_name:str):
+    def send_offer_tracking_email(
+        user_email: str, tracking_code: str, paternal_last_name: str
+    ):
         """Send the tracking code per applicantion realized by user
 
         Args:
@@ -107,23 +109,26 @@ class Util:
         Returns:
             str: Status of the sending message
         """
-        
-        subject = 'Employment application at get-hired.work'
+
+        subject = "Employment application at get-hired.work"
         user_email = user_email
         tracking_code = tracking_code
         last_name = paternal_last_name
-        get_hired_page = 'https://get-hired.work/'
-        preference_message = 'The get-hired team thanks you for your preference.' 
+        get_hired_page = "https://get-hired.work/"
+        preference_message = "The get-hired team thanks you for your preference."
         instructions = f'To follow up on your application we invite you to go to our home page {get_hired_page} and click on the "status of my offer" button by entering your application tracking number and your last name attached to this message:'
-        
-        
-        message ='Subject: {}\n\n{}\n\n{}\n\n Tracking Code: {}\n Last name: {}'.format(subject,preference_message,instructions,tracking_code,last_name)
-        
+
+        message = (
+            "Subject: {}\n\n{}\n\n{}\n\n Tracking Code: {}\n Last name: {}".format(
+                subject, preference_message, instructions, tracking_code, last_name
+            )
+        )
+
         server = smtplib.SMTP("smtp.gmail.com", port=SMTP_PORT)
         server.starttls()
-        server.login(USER_EMAIL,USER_EMAIL_PASSWORD)
-        
-        server.sendmail(USER_EMAIL, f'{user_email}', message)
+        server.login(USER_EMAIL, USER_EMAIL_PASSWORD)
+
+        server.sendmail(USER_EMAIL, f"{user_email}", message)
         server.quit()
-        
-        return 'Message Sended'
+
+        return "Message Sended"
