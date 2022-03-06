@@ -751,3 +751,12 @@ def change_postulation_status_id(
 
     except SQLAlchemyError as error:
         raise error
+
+
+def get_recruitment_process_evaluations_by_company_id(
+    db: Session,
+    company_id: int
+):
+   query = db.query(models.RecruitmentProcessEvaluation)
+   query.filter(models.RecruitmentProcessEvaluation.company_id == company_id)
+   return query.order_by(models.RecruitmentProcessEvaluation.id.desc()).all()

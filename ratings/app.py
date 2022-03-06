@@ -617,3 +617,16 @@ def get_applicant_by_id(
         applicant_id=id,
         postulation_status_id=postulation_status_id,
     )
+
+@app.get(
+    path="/api/v1/companies/{id}/recruitment-process-evaluations",
+    status_code=status.HTTP_200_OK,
+    response_model=List[schemas.RecruitmentProcessEvaluationOut],
+    tags=["Companies"],
+    summary="Get a list of recruitment process evaluation per company",
+)
+def get_all_recruitment_process_evaluations(session_local_db: Session = Depends(get_database_session),id: int = Path(..., gt=0, title="Company ID", example=1, description="Company ID"),):
+    if crud.check_company_id_exist(id) != -1:
+        return crud.get_recruitment_process_evaluations_by_company_id(db=session_local_db,company_id=id)
+    else:
+        raise HTTPException(status_code=404, detail="Company Not Found")
